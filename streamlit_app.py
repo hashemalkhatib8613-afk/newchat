@@ -10,9 +10,9 @@ import pandas as pd
 import plotly.express as px
 import streamlit as st
 
-APP_DIR   = Path(__file__).resolve().parent
+APP_DIR = Path(__file__).resolve().parent
 LOGO_PATH = APP_DIR / "zain-logo.png"
-DB_PATH   = APP_DIR / "zain_customer_360_ai_demo.db"
+DB_PATH = APP_DIR / "zain_customer_360_ai_demo.db"
 
 
 def get_logo_data_uri():
@@ -20,6 +20,7 @@ def get_logo_data_uri():
         return ""
     encoded = base64.b64encode(LOGO_PATH.read_bytes()).decode("utf-8")
     return f"data:image/png;base64,{encoded}"
+
 
 LOGO_DATA_URI = get_logo_data_uri()
 
@@ -32,30 +33,33 @@ def load_streamlit_secret():
     if key:
         os.environ["OPENAI_API_KEY"] = str(key)
 
+
 load_streamlit_secret()
 
 import class3_sql_agent_backend as backend  # noqa: E402
-backend                   = importlib.reload(backend)
-ask_sql_agent_payload     = backend.ask_sql_agent_payload
-build_chart_from_question = backend.build_chart_from_question
-execute_sql_query         = backend.execute_sql_query
-get_database_overview     = backend.get_database_overview
 
-_icon = str(LOGO_PATH) if LOGO_PATH.exists() else "📊"
+backend = importlib.reload(backend)
+ask_sql_agent_payload = backend.ask_sql_agent_payload
+build_chart_from_question = backend.build_chart_from_question
+execute_sql_query = backend.execute_sql_query
+get_database_overview = backend.get_database_overview
+
+
 st.set_page_config(
     page_title="Zain Customer 360 Copilot",
-    page_icon=_icon,
+    page_icon=str(LOGO_PATH) if LOGO_PATH.exists() else "📊",
     layout="wide",
     initial_sidebar_state="expanded",
 )
 
+
 CHART_TYPES = {
-    "Bar":            "bar",
+    "Bar": "bar",
     "Horizontal bar": "horizontal_bar",
-    "Pie":            "pie",
-    "Doughnut":       "doughnut",
-    "Line":           "line",
-    "Area":           "area",
+    "Pie": "pie",
+    "Doughnut": "doughnut",
+    "Line": "line",
+    "Area": "area",
 }
 
 SUGGESTED_QUESTIONS = [
@@ -72,29 +76,28 @@ SUGGESTED_QUESTIONS = [
 ]
 
 NAV_ITEMS = [
-    ("Chat",               "AI Chat",           "💬", "Ask business questions"),
-    ("Analytics",          "Dynamic Analytics", "📊", "Filter KPIs and charts"),
-    ("Chart Builder",      "Chart Builder",     "📈", "Create custom visuals"),
-    ("SQL Query Builder",  "SQL Workspace",     "🧮", "Run safe SELECT queries"),
-    ("Suggested Questions","Prompt Library",    "✨", "Ready-made use cases"),
+    ("Chat", "AI Chat", "💬", "Ask business questions"),
+    ("Analytics", "Dynamic Analytics", "📊", "Filter KPIs and charts"),
+    ("Chart Builder", "Chart Builder", "📈", "Create custom visuals"),
+    ("SQL Query Builder", "SQL Workspace", "🧮", "Run safe SELECT queries"),
+    ("Suggested Questions", "Prompt Library", "✨", "Ready-made use cases"),
 ]
 
 
-# ─────────────────────────────────────────────────────────────
-#  STATE
-# ─────────────────────────────────────────────────────────────
 def ensure_state():
     if "theme_mode" not in st.session_state:
         st.session_state.theme_mode = "Dark"
     if "page" not in st.session_state:
         st.session_state.page = "Chat"
     if "chat_sessions" not in st.session_state:
-        st.session_state.chat_sessions = [{
-            "id":         "chat_1",
-            "title":      "New Chat",
-            "messages":   [default_assistant_message()],
-            "created_at": datetime.now().strftime("%Y-%m-%d %H:%M"),
-        }]
+        st.session_state.chat_sessions = [
+            {
+                "id": "chat_1",
+                "title": "New Chat",
+                "messages": [default_assistant_message()],
+                "created_at": datetime.now().strftime("%Y-%m-%d %H:%M"),
+            }
+        ]
         st.session_state.current_chat_id = "chat_1"
     if "current_chat_id" not in st.session_state:
         st.session_state.current_chat_id = st.session_state.chat_sessions[0]["id"]
@@ -102,20 +105,16 @@ def ensure_state():
         st.session_state.last_chart = None
     if "pending_prompt" not in st.session_state:
         st.session_state.pending_prompt = ""
-    if "chat_search" not in st.session_state:
-        st.session_state.chat_search = ""
 
 
 def default_assistant_message():
     return {
-        "role":    "assistant",
+        "role": "assistant",
         "content": (
-            "Hello. I am your Customer 360 AI Copilot. "
-            "Ask me about customers, churn, complaints, billing, campaigns, "
-            "support interactions, network events, or revenue performance."
+            "Hello. I am your Customer 360 AI Copilot. Ask me about customers, churn, complaints, billing, "
+            "campaigns, support interactions, network events, or revenue performance."
         ),
         "sql": "",
-        "ts":  datetime.now().strftime("%H:%M"),
     }
 
 
@@ -135,11 +134,11 @@ def current_chat():
 
 def create_new_chat():
     ensure_state()
-    next_id = f"chat_{len(st.session_state.chat_sessions)+1}_{int(time.time())}"
+    next_id = f"chat_{len(st.session_state.chat_sessions) + 1}_{int(time.time())}"
     chat = {
-        "id":         next_id,
-        "title":      "New Chat",
-        "messages":   [default_assistant_message()],
+        "id": next_id,
+        "title": "New Chat",
+        "messages": [default_assistant_message()],
         "created_at": datetime.now().strftime("%Y-%m-%d %H:%M"),
     }
     st.session_state.chat_sessions.insert(0, chat)
@@ -150,19 +149,15 @@ def create_new_chat():
 def delete_current_chat():
     ensure_state()
     if len(st.session_state.chat_sessions) == 1:
-        st.session_state.chat_sessions[0]["title"]    = "New Chat"
+        st.session_state.chat_sessions[0]["title"] = "New Chat"
         st.session_state.chat_sessions[0]["messages"] = [default_assistant_message()]
         return
     st.session_state.chat_sessions = [
-        c for c in st.session_state.chat_sessions
-        if c["id"] != st.session_state.current_chat_id
+        c for c in st.session_state.chat_sessions if c["id"] != st.session_state.current_chat_id
     ]
     st.session_state.current_chat_id = st.session_state.chat_sessions[0]["id"]
 
 
-# ─────────────────────────────────────────────────────────────
-#  DATABASE HELPERS
-# ─────────────────────────────────────────────────────────────
 def db_connect():
     if not DB_PATH.exists():
         raise FileNotFoundError(f"Database not found: {DB_PATH}")
@@ -179,9 +174,7 @@ def query_df(sql, params=()):
 
 @st.cache_data(show_spinner=False)
 def list_tables():
-    return query_df(
-        "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name"
-    )["name"].tolist()
+    return query_df("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name")["name"].tolist()
 
 
 @st.cache_data(show_spinner=False)
@@ -196,9 +189,7 @@ def filter_options():
         "months": query_df(
             "SELECT DISTINCT summary_month FROM customer_monthly_summary ORDER BY summary_month"
         )["summary_month"].tolist(),
-        "cities": query_df(
-            "SELECT DISTINCT city FROM customers ORDER BY city"
-        )["city"].dropna().tolist(),
+        "cities": query_df("SELECT DISTINCT city FROM customers ORDER BY city")["city"].dropna().tolist(),
         "segments": query_df(
             "SELECT DISTINCT customer_segment FROM customers ORDER BY customer_segment"
         )["customer_segment"].dropna().tolist(),
@@ -211,569 +202,711 @@ def filter_options():
     }
 
 
-# ─────────────────────────────────────────────────────────────
-#  CSS  — FULL REVAMP v3
-# ─────────────────────────────────────────────────────────────
+# ─────────────────────────── CSS ────────────────────────────
+
 def inject_css():
-    dark = st.session_state.get("theme_mode", "Dark") == "Dark"
+    st.markdown(
+        """
+        <style>
+          @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap');
 
-    if dark:
-        p = dict(
-            bg="#07090f",           bg2="#0d1017",
-            surf="rgba(20,24,36,.96)",  surf2="rgba(26,31,46,.92)",
-            surf3="rgba(30,36,54,.75)",
-            bdr="rgba(255,255,255,.08)",  bdr2="rgba(255,255,255,.14)",  bdr3="rgba(255,255,255,.22)",
-            txt="#f0f2f8",          muted="#8892a4",        soft="#5a6478",
-            accent="#e8192c",       accent2="#ff3347",
-            accent_glow="rgba(232,25,44,.18)",  accent_soft="rgba(232,25,44,.08)",
-            good="#19c88a",         good_soft="rgba(25,200,138,.10)",
-            warn="#f5b731",         warn_soft="rgba(245,183,49,.10)",
-            info="#4a8eff",         info_soft="rgba(74,142,255,.10)",
-            shadow="rgba(0,0,0,.45)",  shadow2="rgba(0,0,0,.25)",
-            input_bg="rgba(20,24,36,.95)",
-            plot_template="plotly_dark",
-            sidebar_bg="linear-gradient(175deg,#0d0f1a 0%,#07090f 100%)",
-            sidebar_glow="rgba(232,25,44,.22)",
-        )
-    else:
-        p = dict(
-            bg="#f0f2f8",           bg2="#ffffff",
-            surf="rgba(255,255,255,.97)",  surf2="rgba(248,249,254,.98)",
-            surf3="rgba(240,242,250,.90)",
-            bdr="rgba(15,20,50,.08)",  bdr2="rgba(15,20,50,.14)",  bdr3="rgba(15,20,50,.22)",
-            txt="#0f1432",          muted="#4a5270",        soft="#8b93aa",
-            accent="#d71920",       accent2="#b81018",
-            accent_glow="rgba(215,25,32,.14)",  accent_soft="rgba(215,25,32,.06)",
-            good="#0a9e6e",         good_soft="rgba(10,158,110,.08)",
-            warn="#c47e00",         warn_soft="rgba(196,126,0,.08)",
-            info="#2563eb",         info_soft="rgba(37,99,235,.08)",
-            shadow="rgba(15,20,60,.12)",  shadow2="rgba(15,20,60,.06)",
-            input_bg="rgba(255,255,255,.97)",
-            plot_template="plotly_white",
-            sidebar_bg="linear-gradient(175deg,#0a0c18 0%,#0c0f1e 100%)",
-            sidebar_glow="rgba(215,25,32,.22)",
-        )
+          :root {
+            --red:       #C8102E;
+            --red-dim:   rgba(200,16,46,.18);
+            --red-glow:  rgba(200,16,46,.35);
+            --bg:        #07080D;
+            --bg2:       #0C0E16;
+            --panel:     #10131C;
+            --panel2:    #141824;
+            --border:    rgba(255,255,255,.07);
+            --border2:   rgba(255,255,255,.12);
+            --text:      #EEF0F5;
+            --muted:     #8A92A6;
+            --soft:      #5C6478;
+            --good:      #22D3A0;
+            --warn:      #F5BE47;
+            --danger:    #F05252;
+            --radius:    16px;
+            --radius-lg: 22px;
+            --radius-xl: 28px;
+            --font-head: 'Syne', sans-serif;
+            --font-body: 'DM Sans', sans-serif;
+          }
 
-    st.session_state.plot_template = p["plot_template"]
+          *, *::before, *::after { box-sizing: border-box; }
 
-    st.markdown(f"""
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap');
+          html, body, .stApp {
+            font-family: var(--font-body);
+            background: var(--bg);
+            color: var(--text);
+          }
 
-/* ══════════════════════════════════════
-   ZAIN 360 — UI REVAMP v3
-   ══════════════════════════════════════ */
-:root {{
-  --bg:{p['bg']}; --bg2:{p['bg2']};
-  --surf:{p['surf']}; --surf2:{p['surf2']}; --surf3:{p['surf3']};
-  --bdr:{p['bdr']}; --bdr2:{p['bdr2']}; --bdr3:{p['bdr3']};
-  --txt:{p['txt']}; --muted:{p['muted']}; --soft:{p['soft']};
-  --accent:{p['accent']}; --accent2:{p['accent2']};
-  --accent-glow:{p['accent_glow']}; --accent-soft:{p['accent_soft']};
-  --good:{p['good']}; --good-soft:{p['good_soft']};
-  --warn:{p['warn']}; --warn-soft:{p['warn_soft']};
-  --info:{p['info']}; --info-soft:{p['info_soft']};
-  --shadow:{p['shadow']}; --shadow2:{p['shadow2']};
-  --input-bg:{p['input_bg']};
-  --r-xs:8px; --r-sm:12px; --r-md:16px; --r-lg:22px; --r-xl:28px; --r-2xl:36px;
-}}
+          .stApp {
+            background:
+              radial-gradient(ellipse 800px 600px at -10% -15%, rgba(200,16,46,.14) 0%, transparent 55%),
+              radial-gradient(ellipse 600px 500px at 110% 5%, rgba(120,16,46,.07) 0%, transparent 50%),
+              var(--bg);
+          }
 
-/* ── GLOBAL ── */
-*,*::before,*::after{{box-sizing:border-box}}
-html,body,.stApp{{
-  font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif !important;
-  -webkit-font-smoothing:antialiased;
-}}
-.stApp{{
-  background:
-    radial-gradient(ellipse 70% 45% at 0% -5%, rgba(232,25,44,.16),transparent),
-    radial-gradient(ellipse 50% 35% at 100% 0%, rgba(140,10,20,.10),transparent),
-    radial-gradient(ellipse 60% 50% at 50% 100%, rgba(74,142,255,.04),transparent),
-    linear-gradient(160deg,var(--bg) 0%,var(--bg2) 100%);
-  color:var(--txt);
-}}
-.block-container{{padding:1.5rem 2.25rem 5rem !important;max-width:1520px !important}}
-@media(max-width:900px){{.block-container{{padding:1rem 1rem 5rem !important}}}}
-h1,h2,h3,h4,h5,h6{{color:var(--txt) !important}}
-p,label,span{{color:var(--txt)}}
-h1{{font-size:clamp(1.9rem,3.2vw,3.4rem);font-weight:900;letter-spacing:-.065em;line-height:1.0}}
-h2{{font-weight:800;letter-spacing:-.03em}}
-h3{{font-weight:800;letter-spacing:-.025em}}
-a{{color:var(--accent2);text-decoration:none}}
-a:hover{{text-decoration:underline}}
+          /* ── Typography reset ── */
+          h1, h2, h3, h4, h5, h6 {
+            font-family: var(--font-head);
+            color: var(--text);
+            letter-spacing: -.03em;
+          }
 
-/* ── SIDEBAR ── */
-section[data-testid="stSidebar"]{{
-  background:
-    radial-gradient(circle at 15% 5%,{p['sidebar_glow']},transparent 30%),
-    {p['sidebar_bg']} !important;
-  border-right:1px solid rgba(255,255,255,.07) !important;
-  box-shadow:4px 0 40px rgba(0,0,0,.3) !important;
-}}
-section[data-testid="stSidebar"] > div{{padding:1.1rem .85rem 2rem !important}}
-section[data-testid="stSidebar"] *{{color:#eef0f8 !important}}
+          p, label, span, li { color: var(--text); }
 
-[data-testid="stSidebar"] .stButton > button{{
-  width:100%;min-height:46px;border-radius:var(--r-md) !important;
-  border:1px solid rgba(255,255,255,.07) !important;
-  background:rgba(255,255,255,.04) !important;
-  color:#c8cce0 !important;font-weight:500;font-size:.875rem;
-  justify-content:flex-start;text-align:left;padding:.65rem 1rem;
-  transition:all .2s cubic-bezier(.4,0,.2,1);letter-spacing:-.01em;
-}}
-[data-testid="stSidebar"] .stButton > button:hover{{
-  transform:translateX(3px);
-  border-color:rgba(232,25,44,.35) !important;
-  background:rgba(232,25,44,.10) !important;
-  color:#fff !important;
-  box-shadow:0 0 20px rgba(232,25,44,.12);
-}}
+          a { color: var(--red); text-decoration: none; }
 
-/* ── BRAND CARD ── */
-.brand-card{{
-  position:relative;overflow:hidden;
-  border:1px solid rgba(232,25,44,.22);border-radius:var(--r-xl);
-  padding:1.1rem 1rem 1rem;
-  background:linear-gradient(135deg,rgba(232,25,44,.20) 0%,rgba(255,255,255,.04) 100%);
-  margin:.2rem 0 1.1rem;
-}}
-.brand-card::before{{
-  content:"";position:absolute;inset:0;border-radius:inherit;
-  background:radial-gradient(circle at 0% 0%,rgba(232,25,44,.25),transparent 60%);
-  pointer-events:none;
-}}
-.brand-card-inner{{display:flex;align-items:center;gap:10px;margin-bottom:.55rem;position:relative}}
-.brand-logo-img{{
-  width:42px;height:42px;border-radius:12px;object-fit:cover;flex-shrink:0;
-  box-shadow:0 4px 14px rgba(0,0,0,.35),0 0 0 2px rgba(255,255,255,.12);
-}}
-.brand-title{{font-size:.98rem;font-weight:900;letter-spacing:-.025em;color:#fff !important;position:relative}}
-.brand-copy{{font-size:.74rem;line-height:1.55;color:rgba(220,224,240,.60) !important;position:relative}}
-.chip-row{{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.8rem;position:relative}}
-.chip{{
-  border:1px solid rgba(232,25,44,.30);border-radius:999px;
-  padding:.22rem .55rem;font-size:.65rem;font-weight:700;
-  color:rgba(255,200,200,.9) !important;background:rgba(232,25,44,.12);letter-spacing:.03em;
-}}
+          /* ── Block container ── */
+          .block-container {
+            padding: 1.5rem 2.25rem 5rem !important;
+            max-width: 1560px !important;
+          }
 
-/* ── SIDEBAR LABELS ── */
-.side-label{{
-  margin:1.1rem .1rem .5rem;color:rgba(200,205,225,.38) !important;
-  font-size:.65rem;text-transform:uppercase;letter-spacing:.14em;font-weight:700;
-}}
+          @media (max-width: 900px) {
+            .block-container { padding: 1rem 1rem 5rem !important; }
+          }
 
-/* ── ACTIVE PAGE ── */
-.active-page{{
-  position:relative;border:1px solid rgba(232,25,44,.40);
-  background:linear-gradient(135deg,rgba(232,25,44,.18),rgba(255,255,255,.05));
-  border-radius:var(--r-md);padding:.75rem 1rem;margin:.2rem 0 .6rem;
-  box-shadow:0 0 0 3px rgba(232,25,44,.10),0 8px 32px rgba(232,25,44,.12);
-}}
-.active-page::before{{
-  content:"";position:absolute;left:0;top:20%;bottom:20%;
-  width:3px;border-radius:0 3px 3px 0;
-  background:var(--accent2);box-shadow:0 0 10px var(--accent2);
-}}
-.active-page b{{font-size:.9rem;color:#fff !important;letter-spacing:-.015em}}
-.active-page small{{display:block;color:rgba(230,180,185,.65) !important;font-size:.7rem;margin-top:.12rem}}
+          /* ─────────── SIDEBAR ─────────── */
+          section[data-testid="stSidebar"] {
+            background:
+              radial-gradient(ellipse 260px 300px at 50% -10%, rgba(200,16,46,.22) 0%, transparent 60%),
+              linear-gradient(180deg, #0A0C14 0%, #07080D 100%) !important;
+            border-right: 1px solid rgba(255,255,255,.06) !important;
+          }
 
-/* ── HERO CARD ── */
-.hero-card{{
-  position:relative;overflow:hidden;
-  border:1px solid var(--bdr2);border-radius:var(--r-2xl);
-  padding:1.6rem min(13rem,20vw) 1.6rem 1.75rem;
-  background:
-    radial-gradient(ellipse at 0% 0%,rgba(232,25,44,.22),transparent 40%),
-    linear-gradient(135deg,var(--surf) 0%,var(--surf2) 100%);
-  box-shadow:0 24px 80px var(--shadow),0 1px 0 rgba(255,255,255,.06) inset;
-  margin-bottom:1.25rem;
-}}
-.hero-card::after{{
-  content:"";position:absolute;right:1.5rem;top:50%;
-  width:clamp(80px,11vw,140px);height:clamp(80px,11vw,140px);
-  transform:translateY(-50%);border-radius:var(--r-xl);
-  background:rgba(255,255,255,.03);border:1px solid var(--bdr2);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.08);
-}}
-.hero-logo{{
-  position:absolute;right:2.2rem;top:50%;
-  width:clamp(60px,8vw,100px);transform:translateY(-50%);
-  border-radius:22px;object-fit:cover;
-  box-shadow:0 8px 32px rgba(0,0,0,.35),0 0 0 3px rgba(255,255,255,.10);
-  opacity:.7;z-index:2;pointer-events:none;
-}}
-.hero-eyebrow{{
-  display:inline-flex;align-items:center;gap:.4rem;
-  padding:.28rem .65rem;border:1px solid rgba(232,25,44,.30);border-radius:999px;
-  background:rgba(232,25,44,.10);color:var(--accent2);
-  font-size:.7rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase;margin-bottom:.9rem;
-}}
-.hero-eyebrow::before{{
-  content:"";width:6px;height:6px;border-radius:50%;
-  background:var(--accent2);box-shadow:0 0 8px var(--accent2);
-}}
-.hero-title{{
-  font-size:clamp(1.9rem,3.2vw,3.4rem);font-weight:900;
-  letter-spacing:-.065em;line-height:1.0;color:var(--txt) !important;max-width:820px;
-}}
-.hero-copy{{color:var(--muted);font-size:1rem;line-height:1.65;max-width:820px;margin-top:.7rem;font-weight:400}}
-@media(max-width:700px){{
-  .hero-card{{padding:1.25rem !important}}
-  .hero-card::after,.hero-logo{{display:none !important}}
-}}
+          section[data-testid="stSidebar"] > div {
+            padding: 1.25rem 1rem 2rem !important;
+          }
 
-/* ── KPI CARDS ── */
-.kpi-card{{
-  position:relative;overflow:hidden;
-  border:1px solid var(--bdr);border-radius:var(--r-xl);
-  padding:1.1rem 1.1rem .95rem;min-height:130px;
-  background:linear-gradient(160deg,var(--surf2) 0%,var(--surf) 100%);
-  box-shadow:0 16px 48px var(--shadow2);
-  transition:transform .2s ease,box-shadow .2s ease,border-color .2s;
-}}
-.kpi-card:hover{{
-  transform:translateY(-2px);
-  box-shadow:0 24px 60px var(--shadow);
-  border-color:var(--bdr2);
-}}
-.kpi-card::before{{
-  content:"";position:absolute;top:0;left:0;right:0;height:1px;
-  background:linear-gradient(90deg,transparent,rgba(255,255,255,.14),transparent);
-}}
-.kpi-top{{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.45rem}}
-.kpi-label{{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--soft)}}
-.kpi-badge{{font-size:.65rem;font-weight:700;padding:.2rem .5rem;border-radius:999px}}
-.kpi-badge.good  {{background:var(--good-soft); color:var(--good); border:1px solid rgba(25,200,138,.22)}}
-.kpi-badge.warn  {{background:var(--warn-soft); color:var(--warn); border:1px solid rgba(245,183,49,.22)}}
-.kpi-badge.info  {{background:var(--info-soft); color:var(--info); border:1px solid rgba(74,142,255,.22)}}
-.kpi-badge.danger{{background:var(--accent-soft);color:var(--accent2);border:1px solid rgba(232,25,44,.22)}}
-.kpi-badge.gray  {{background:var(--surf3);color:var(--muted);border:1px solid var(--bdr2)}}
-.kpi-value{{
-  font-size:clamp(1.5rem,2.7vw,2.15rem);font-weight:900;
-  letter-spacing:-.055em;line-height:1;color:var(--txt) !important;margin:.2rem 0 .35rem;
-}}
-.kpi-divider{{height:1px;background:var(--bdr);margin:.6rem 0 .5rem}}
-.kpi-note{{font-size:.76rem;color:var(--muted);line-height:1.4;font-weight:400}}
+          section[data-testid="stSidebar"] * { color: var(--text) !important; }
 
-/* ── SECTION TITLES ── */
-.section-title{{
-  display:flex;align-items:center;justify-content:space-between;
-  gap:1rem;margin:.8rem 0 .75rem;
-}}
-.section-title h3{{margin:0;font-size:1.1rem;font-weight:800;letter-spacing:-.025em}}
-.section-title span{{color:var(--muted);font-size:.82rem}}
+          /* Sidebar all buttons */
+          [data-testid="stSidebar"] .stButton > button {
+            width: 100%;
+            min-height: 40px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: rgba(255,255,255,.04);
+            color: var(--muted) !important;
+            font-family: var(--font-body);
+            font-weight: 500;
+            font-size: .83rem;
+            justify-content: flex-start;
+            text-align: left;
+            padding: .55rem .85rem;
+            transition: all .16s ease;
+            box-shadow: none;
+          }
 
-/* ── PROMPT CARDS ── */
-.prompt-card{{
-  position:relative;overflow:hidden;
-  border:1px solid var(--bdr);border-radius:var(--r-xl);
-  padding:1rem 1.05rem 1.4rem;background:var(--surf);
-  box-shadow:0 12px 32px var(--shadow2);min-height:120px;cursor:pointer;
-  transition:all .22s cubic-bezier(.4,0,.2,1);
-}}
-.prompt-card:hover{{
-  transform:translateY(-3px);
-  border-color:rgba(232,25,44,.35);
-  box-shadow:0 0 0 4px rgba(232,25,44,.08),0 24px 55px var(--shadow);
-  background:linear-gradient(135deg,rgba(232,25,44,.06),var(--surf));
-}}
-.prompt-card::after{{
-  content:"→";position:absolute;bottom:.85rem;right:.9rem;
-  font-size:.8rem;color:var(--accent2);opacity:0;
-  transform:translateX(-4px);transition:all .2s ease;
-}}
-.prompt-card:hover::after{{opacity:1;transform:translateX(0)}}
-.prompt-number{{
-  display:inline-flex;align-items:center;justify-content:center;
-  width:22px;height:22px;border-radius:6px;
-  background:var(--accent-soft);border:1px solid rgba(232,25,44,.20);
-  color:var(--accent2);font-size:.65rem;font-weight:800;margin-bottom:.55rem;
-}}
-.prompt-card p{{margin:0;color:var(--muted);font-size:.855rem;line-height:1.55}}
+          [data-testid="stSidebar"] .stButton > button:hover {
+            border-color: var(--border2);
+            background: rgba(255,255,255,.08);
+            color: var(--text) !important;
+            transform: none;
+          }
 
-/* ── SOURCE BADGE ── */
-.source-badge{{
-  display:inline-flex;align-items:center;gap:.3rem;
-  padding:.18rem .52rem;border-radius:999px;
-  font-size:.66rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase;
-  margin-bottom:5px;
-}}
-.source-sql   {{background:var(--info-soft);   color:var(--info);   border:1px solid rgba(74,142,255,.22)}}
-.source-rag   {{background:var(--good-soft);   color:var(--good);   border:1px solid rgba(25,200,138,.22)}}
-.source-err   {{background:var(--accent-soft); color:var(--accent2);border:1px solid rgba(232,25,44,.22)}}
-.source-cache {{background:var(--warn-soft);   color:var(--warn);   border:1px solid rgba(245,183,49,.22)}}
+          /* New Chat primary button in sidebar */
+          [data-testid="stSidebar"] .stButton > button[kind="primary"] {
+            background: linear-gradient(135deg, var(--red), #9B0B22) !important;
+            border-color: rgba(255,255,255,.14) !important;
+            color: #fff !important;
+            font-weight: 600;
+            font-size: .85rem;
+          }
 
-/* ── MSG TIMESTAMP ── */
-.msg-ts{{font-size:.65rem;color:var(--soft);margin-top:4px;text-align:right}}
-.msg-ts.bot{{text-align:left}}
+          /* ── Sidebar brand block ── */
+          .sb-brand {
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+            padding: .85rem .95rem;
+            background: rgba(200,16,46,.1);
+            border: 1px solid rgba(200,16,46,.22);
+            border-radius: var(--radius-lg);
+            margin-bottom: 1.25rem;
+          }
 
-/* ── CHAT MESSAGES ── */
-.stChatMessage{{
-  border-radius:var(--r-xl) !important;border:1px solid var(--bdr) !important;
-  background:var(--surf) !important;box-shadow:0 10px 32px var(--shadow2) !important;
-  padding:.85rem 1rem !important;transition:box-shadow .2s;
-}}
-.stChatMessage:hover{{box-shadow:0 16px 44px var(--shadow) !important}}
-[data-testid="stChatInput"] > div{{
-  border-radius:var(--r-xl) !important;border:1px solid var(--bdr2) !important;
-  background:var(--input-bg) !important;box-shadow:0 8px 28px var(--shadow2) !important;
-  transition:border-color .2s,box-shadow .2s;
-}}
-[data-testid="stChatInput"] > div:focus-within{{
-  border-color:rgba(232,25,44,.45) !important;
-  box-shadow:0 0 0 4px rgba(232,25,44,.10),0 8px 28px var(--shadow) !important;
-}}
+          .sb-brand-mark {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--red), #7A0A1C);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+          }
 
-/* ── SHELL CARD ── */
-.shell-card{{
-  border:1px solid var(--bdr);border-radius:var(--r-xl);
-  background:var(--surf);box-shadow:0 18px 55px var(--shadow2);
-  padding:1.15rem;margin-bottom:1.1rem;position:relative;overflow:hidden;
-}}
-.shell-card::before{{
-  content:"";position:absolute;top:0;left:0;right:0;height:1px;
-  background:linear-gradient(90deg,transparent,rgba(255,255,255,.10),transparent);
-  pointer-events:none;
-}}
+          .sb-brand-text { line-height: 1.2; }
 
-/* ── BUTTONS ── */
-.stButton > button,
-.stDownloadButton > button,
-div[data-testid="stFormSubmitButton"] > button{{
-  min-height:44px;border-radius:var(--r-md) !important;
-  border:1px solid var(--bdr2) !important;
-  background:linear-gradient(160deg,var(--surf2),var(--surf)) !important;
-  color:var(--txt) !important;font-weight:600;font-size:.875rem;letter-spacing:-.01em;
-  box-shadow:0 8px 24px var(--shadow2) !important;transition:all .2s cubic-bezier(.4,0,.2,1) !important;
-}}
-.stButton > button:hover,
-.stDownloadButton > button:hover,
-div[data-testid="stFormSubmitButton"] > button:hover{{
-  transform:translateY(-1px) !important;
-  border-color:rgba(232,25,44,.45) !important;color:var(--accent2) !important;
-  box-shadow:0 0 0 3px rgba(232,25,44,.10),0 12px 32px var(--shadow) !important;
-}}
-.stButton > button[kind="primary"],
-.stDownloadButton > button[kind="primary"],
-div[data-testid="stFormSubmitButton"] > button[kind="primary"]{{
-  background:linear-gradient(135deg,#e8192c 0%,#c41020 100%) !important;
-  border-color:rgba(255,255,255,.15) !important;color:#fff !important;
-  box-shadow:0 8px 28px rgba(232,25,44,.30) !important;
-}}
-.stButton > button[kind="primary"]:hover{{
-  background:linear-gradient(135deg,#ff2d42 0%,#d71428 100%) !important;
-  box-shadow:0 0 0 3px rgba(232,25,44,.20),0 12px 40px rgba(232,25,44,.35) !important;
-}}
+          .sb-brand-title {
+            font-family: var(--font-head);
+            font-size: .93rem;
+            font-weight: 700;
+            color: #fff !important;
+          }
 
-/* ── INPUTS ── */
-input,textarea,
-div[data-baseweb="select"] > div,
-div[data-baseweb="input"] > div{{
-  border-radius:var(--r-md) !important;border-color:var(--bdr2) !important;
-  background:var(--input-bg) !important;color:var(--txt) !important;
-  font-family:'Inter',sans-serif !important;transition:border-color .2s,box-shadow .2s !important;
-}}
-input:focus,textarea:focus{{
-  border-color:rgba(232,25,44,.45) !important;
-  box-shadow:0 0 0 3px rgba(232,25,44,.10) !important;
-}}
-textarea{{font-family:'JetBrains Mono',ui-monospace,monospace !important;font-size:.84rem !important}}
+          .sb-brand-sub {
+            font-size: .71rem;
+            color: rgba(255,255,255,.5) !important;
+          }
 
-/* ── TABS ── */
-div[data-testid="stTabs"] [role="tablist"]{{
-  border-bottom:1px solid var(--bdr2) !important;gap:.15rem;padding-bottom:0;
-}}
-div[data-testid="stTabs"] button{{
-  border-radius:var(--r-sm) var(--r-sm) 0 0 !important;color:var(--muted) !important;
-  font-weight:600 !important;font-size:.875rem !important;
-  padding:.5rem 1rem !important;border:none !important;transition:all .15s !important;
-}}
-div[data-testid="stTabs"] button:hover{{color:var(--txt) !important;background:var(--surf3) !important}}
-div[data-testid="stTabs"] button[aria-selected="true"]{{
-  color:var(--txt) !important;
-  border-bottom:2px solid var(--accent2) !important;background:transparent !important;
-}}
+          /* Sidebar section labels */
+          .sb-label {
+            font-family: var(--font-head);
+            font-size: .64rem;
+            font-weight: 700;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+            color: var(--soft) !important;
+            margin: 1.1rem .1rem .4rem;
+          }
 
-/* ── METRICS ── */
-div[data-testid="stMetric"]{{
-  border:1px solid var(--bdr);border-radius:var(--r-xl);
-  background:var(--surf);box-shadow:0 14px 40px var(--shadow2);padding:1rem 1.1rem;
-}}
-div[data-testid="stMetric"] [data-testid="stMetricLabel"] p{{
-  font-size:.72rem !important;font-weight:700 !important;
-  text-transform:uppercase;letter-spacing:.08em;color:var(--muted) !important;
-}}
-div[data-testid="stMetric"] [data-testid="stMetricValue"]{{
-  font-size:2rem !important;font-weight:900 !important;
-  letter-spacing:-.05em !important;color:var(--txt) !important;
-}}
+          /* Active page indicator */
+          .sb-active {
+            display: flex;
+            align-items: center;
+            gap: .6rem;
+            padding: .62rem .9rem;
+            background: rgba(200,16,46,.15);
+            border: 1px solid rgba(200,16,46,.30);
+            border-radius: 12px;
+            margin-bottom: .75rem;
+            cursor: default;
+          }
 
-/* ── DATAFRAME ── */
-div[data-testid="stDataFrame"],div[data-testid="stTable"]{{
-  border-radius:var(--r-xl) !important;overflow:hidden !important;
-  border:1px solid var(--bdr) !important;box-shadow:0 14px 40px var(--shadow2) !important;
-}}
+          .sb-active-icon {
+            font-size: 1rem;
+          }
 
-/* ── EXPANDER ── */
-div[data-testid="stExpander"]{{
-  border:1px solid var(--bdr) !important;border-radius:var(--r-lg) !important;
-  background:var(--surf) !important;overflow:hidden;
-}}
+          .sb-active-text { flex: 1; }
 
-/* ── ALERTS ── */
-div[data-testid="stAlert"]{{border-radius:var(--r-lg) !important;border:1px solid var(--bdr) !important;font-size:.875rem !important}}
+          .sb-active-name {
+            font-family: var(--font-head);
+            font-size: .85rem;
+            font-weight: 700;
+            color: #fff !important;
+          }
 
-/* ── SLIDER ── */
-[data-testid="stSlider"] [data-baseweb="slider"] [role="slider"]{{
-  background:var(--accent) !important;border-color:var(--accent2) !important;
-  box-shadow:0 0 0 4px rgba(232,25,44,.20) !important;
-}}
+          .sb-active-desc {
+            font-size: .69rem;
+            color: rgba(255,255,255,.5) !important;
+          }
 
-/* ── MULTISELECT TAGS ── */
-[data-baseweb="tag"]{{border-radius:999px !important;background:var(--accent-soft) !important;border:1px solid rgba(232,25,44,.25) !important}}
-[data-baseweb="tag"] span{{color:var(--accent2) !important;font-weight:700 !important}}
+          .sb-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--red);
+            box-shadow: 0 0 6px var(--red);
+          }
 
-/* ── SQL EDITOR ── */
-.sql-editor-wrap textarea{{
-  background:#06080e !important;color:#a8d8a0 !important;
-  font-size:.82rem !important;line-height:1.72 !important;
-  border-color:rgba(168,216,160,.18) !important;
-}}
+          /* ─────────── HERO BANNER ─────────── */
+          .hero {
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--border2);
+            border-radius: var(--radius-xl);
+            padding: 1.5rem 1.75rem;
+            background:
+              radial-gradient(ellipse 60% 120% at 0% 50%, rgba(200,16,46,.20) 0%, transparent 55%),
+              linear-gradient(135deg, var(--panel), var(--panel2));
+            margin-bottom: 1.4rem;
+          }
 
-/* ── EMPTY STATE ── */
-.empty-state{{
-  border:1.5px dashed var(--bdr2);border-radius:var(--r-xl);
-  padding:3rem 2rem;text-align:center;margin-top:1rem;
-}}
-.empty-state-icon{{font-size:2.4rem;margin-bottom:.6rem;opacity:.35}}
-.empty-state-title{{font-size:.95rem;font-weight:800;color:var(--muted);margin-bottom:.3rem}}
-.empty-state-sub{{font-size:.82rem;color:var(--soft)}}
+          .hero::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.015'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            pointer-events: none;
+            opacity: .6;
+          }
 
-/* ── RISK / STATUS BADGES ── */
-.badge{{display:inline-flex;align-items:center;padding:.22rem .55rem;border-radius:999px;font-size:.68rem;font-weight:800}}
-.badge-high  {{background:var(--accent-soft);border:1px solid rgba(232,25,44,.25);color:var(--accent2)}}
-.badge-med   {{background:var(--warn-soft);  border:1px solid rgba(245,183,49,.25); color:var(--warn)}}
-.badge-low   {{background:var(--good-soft);  border:1px solid rgba(25,200,138,.25); color:var(--good)}}
+          .hero-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: .4rem;
+            padding: .28rem .6rem;
+            background: rgba(200,16,46,.14);
+            border: 1px solid rgba(200,16,46,.28);
+            border-radius: 999px;
+            color: #FF5B70 !important;
+            font-family: var(--font-head);
+            font-size: .67rem;
+            font-weight: 700;
+            letter-spacing: .10em;
+            text-transform: uppercase;
+            margin-bottom: .7rem;
+          }
 
-/* ── TIP CARD ── */
-.tip-card{{
-  border-left:3px solid var(--accent);border-radius:0 var(--r-sm) var(--r-sm) 0;
-  background:rgba(232,25,44,.07);padding:.65rem 1rem;
-  font-size:.82rem;color:var(--muted);line-height:1.5;margin-top:.6rem;
-}}
+          .hero-title {
+            font-family: var(--font-head);
+            font-size: clamp(1.65rem, 2.8vw, 2.6rem);
+            font-weight: 800;
+            letter-spacing: -.045em;
+            line-height: 1.05;
+            color: #fff !important;
+            margin: 0 0 .5rem;
+          }
 
-/* ── INSIGHT TAG ── */
-.insight-tag{{
-  display:inline-flex;padding:.25rem .55rem;border-radius:999px;
-  background:var(--accent-soft);border:1px solid rgba(232,25,44,.20);
-  color:var(--accent2);font-size:.72rem;font-weight:900;margin:.12rem .2rem .12rem 0;
-}}
-.status-good{{color:var(--good);font-weight:900}}
-.status-warn{{color:var(--warn);font-weight:900}}
-.muted-text{{color:var(--muted)}}
+          .hero-copy {
+            font-family: var(--font-body);
+            font-size: .92rem;
+            color: var(--muted) !important;
+            line-height: 1.6;
+            max-width: 720px;
+            margin: 0;
+          }
 
-/* ── SCROLL HINT ── */
-.scroll-hint{{text-align:center;padding:.4rem;font-size:.72rem;color:var(--soft);animation:fadeup 1.5s ease-in-out infinite}}
-@keyframes fadeup{{0%,100%{{opacity:.3;transform:translateY(0)}}50%{{opacity:.8;transform:translateY(-3px)}}}}
+          .hero-logo-wrap {
+            position: absolute;
+            right: 1.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: clamp(56px, 7vw, 88px);
+            height: clamp(56px, 7vw, 88px);
+            background: rgba(255,255,255,.045);
+            border: 1px solid var(--border2);
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
 
-/* ── SCROLLBAR ── */
-::-webkit-scrollbar{{width:5px;height:5px}}
-::-webkit-scrollbar-track{{background:transparent}}
-::-webkit-scrollbar-thumb{{background:var(--bdr2);border-radius:999px}}
-::-webkit-scrollbar-thumb:hover{{background:var(--bdr3)}}
+          .hero-logo-wrap img {
+            width: 68%;
+            opacity: .7;
+          }
 
-/* ── HIDE STREAMLIT CHROME ── */
-footer,#MainMenu{{visibility:hidden}}
-[data-testid="stToolbar"]{{display:none}}
-</style>
-""", unsafe_allow_html=True)
+          @media (max-width: 680px) {
+            .hero-logo-wrap { display: none; }
+          }
+
+          /* ─────────── KPI CARDS ─────────── */
+          .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+            gap: .75rem;
+            margin-bottom: 1.25rem;
+          }
+
+          .kpi {
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 1rem 1.1rem;
+            background: var(--panel);
+            position: relative;
+            overflow: hidden;
+            transition: border-color .2s, box-shadow .2s;
+          }
+
+          .kpi::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--red), transparent);
+            opacity: 0;
+            transition: opacity .2s;
+          }
+
+          .kpi:hover { border-color: var(--border2); }
+          .kpi:hover::before { opacity: 1; }
+
+          .kpi-label {
+            font-family: var(--font-head);
+            font-size: .67rem;
+            font-weight: 700;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            color: var(--muted) !important;
+            margin-bottom: .55rem;
+          }
+
+          .kpi-value {
+            font-family: var(--font-head);
+            font-size: clamp(1.35rem, 2.4vw, 1.9rem);
+            font-weight: 800;
+            letter-spacing: -.04em;
+            color: #fff !important;
+            line-height: 1;
+            margin-bottom: .3rem;
+          }
+
+          .kpi-note {
+            font-size: .75rem;
+            color: var(--soft) !important;
+            line-height: 1.35;
+          }
+
+          /* ─────────── CARDS & SHELLS ─────────── */
+          .card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 1.15rem;
+            margin-bottom: .85rem;
+          }
+
+          .card-sm {
+            background: var(--panel2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: .85rem .95rem;
+            margin-bottom: .65rem;
+          }
+
+          /* ─────────── PROMPT CARDS ─────────── */
+          .prompt-card {
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: .95rem 1rem;
+            background: var(--panel);
+            min-height: 118px;
+            transition: border-color .18s, background .18s;
+            cursor: default;
+          }
+
+          .prompt-card:hover {
+            border-color: rgba(200,16,46,.28);
+            background: var(--panel2);
+          }
+
+          .prompt-card-num {
+            font-family: var(--font-head);
+            font-size: .64rem;
+            font-weight: 700;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            color: var(--red) !important;
+            margin-bottom: .42rem;
+          }
+
+          .prompt-card p {
+            margin: 0;
+            color: var(--muted) !important;
+            font-size: .84rem;
+            line-height: 1.5;
+          }
+
+          /* ─────────── QUICK PROMPT CHIPS ─────────── */
+          .quick-chip-wrap {
+            display: flex;
+            flex-wrap: wrap;
+            gap: .5rem;
+            margin-bottom: 1rem;
+          }
+
+          /* ─────────── SECTION HEADERS ─────────── */
+          .section-hd {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 1rem;
+            margin: .25rem 0 .9rem;
+          }
+
+          .section-hd h3 {
+            font-family: var(--font-head);
+            font-size: 1rem;
+            font-weight: 700;
+            margin: 0;
+            color: var(--text) !important;
+          }
+
+          .section-hd span {
+            font-size: .78rem;
+            color: var(--soft) !important;
+          }
+
+          /* ─────────── TAGS / BADGES ─────────── */
+          .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: .22rem .52rem;
+            border-radius: 999px;
+            background: var(--red-dim);
+            border: 1px solid rgba(200,16,46,.22);
+            color: #FF6B7A !important;
+            font-size: .69rem;
+            font-weight: 600;
+            margin: .1rem .18rem .1rem 0;
+          }
+
+          .badge-good {
+            background: rgba(34,211,160,.12);
+            border-color: rgba(34,211,160,.22);
+            color: var(--good) !important;
+          }
+
+          .badge-warn {
+            background: rgba(245,190,71,.12);
+            border-color: rgba(245,190,71,.22);
+            color: var(--warn) !important;
+          }
+
+          .badge-danger {
+            background: rgba(240,82,82,.12);
+            border-color: rgba(240,82,82,.22);
+            color: var(--danger) !important;
+          }
+
+          /* ─────────── DIVIDER ─────────── */
+          hr { border-color: var(--border) !important; margin: .75rem 0 !important; }
+
+          /* ─────────── BUTTONS (main content) ─────────── */
+          .stButton > button,
+          .stDownloadButton > button,
+          div[data-testid="stFormSubmitButton"] > button {
+            font-family: var(--font-body) !important;
+            font-weight: 500 !important;
+            min-height: 40px;
+            border-radius: 12px !important;
+            border: 1px solid var(--border2) !important;
+            background: var(--panel2) !important;
+            color: var(--text) !important;
+            box-shadow: none !important;
+            transition: border-color .15s, background .15s, transform .12s !important;
+            font-size: .86rem !important;
+          }
+
+          .stButton > button:hover,
+          .stDownloadButton > button:hover {
+            border-color: rgba(200,16,46,.45) !important;
+            background: var(--panel) !important;
+            transform: translateY(-1px) !important;
+          }
+
+          .stButton > button[kind="primary"],
+          .stDownloadButton > button[kind="primary"],
+          div[data-testid="stFormSubmitButton"] > button {
+            background: linear-gradient(135deg, var(--red), #9B0B22) !important;
+            border-color: rgba(255,255,255,.14) !important;
+            color: #fff !important;
+            font-weight: 600 !important;
+          }
+
+          .stButton > button[kind="primary"]:hover {
+            background: linear-gradient(135deg, #E0162E, #7A0A1C) !important;
+          }
+
+          /* ─────────── INPUTS ─────────── */
+          input,
+          textarea,
+          div[data-baseweb="select"] > div,
+          div[data-baseweb="input"] > div {
+            font-family: var(--font-body) !important;
+            background: var(--panel2) !important;
+            border: 1px solid var(--border2) !important;
+            border-radius: 12px !important;
+            color: var(--text) !important;
+          }
+
+          textarea {
+            font-family: ui-monospace, 'Fira Code', Menlo, monospace !important;
+            font-size: .84rem !important;
+          }
+
+          /* Slider */
+          .stSlider [data-testid="stTickBar"] { display: none; }
+          .stSlider [data-baseweb="slider"] div[role="slider"] {
+            background: var(--red) !important;
+          }
+
+          /* ─────────── TABS ─────────── */
+          div[data-testid="stTabs"] [role="tablist"] {
+            gap: .3rem;
+            border-bottom: 1px solid var(--border) !important;
+            padding-bottom: 0;
+          }
+
+          div[data-testid="stTabs"] button[role="tab"] {
+            font-family: var(--font-head) !important;
+            font-size: .8rem !important;
+            font-weight: 600 !important;
+            color: var(--muted) !important;
+            border-radius: 8px 8px 0 0 !important;
+            padding: .45rem .9rem !important;
+            border: 1px solid transparent !important;
+            border-bottom: none !important;
+            background: transparent !important;
+            transition: color .15s, background .15s !important;
+          }
+
+          div[data-testid="stTabs"] button[role="tab"]:hover {
+            color: var(--text) !important;
+            background: var(--panel) !important;
+          }
+
+          div[data-testid="stTabs"] button[role="tab"][aria-selected="true"] {
+            color: #fff !important;
+            background: var(--panel) !important;
+            border-color: var(--border) !important;
+          }
+
+          /* ─────────── CHAT MESSAGES ─────────── */
+          .stChatMessage {
+            background: var(--panel) !important;
+            border: 1px solid var(--border) !important;
+            border-radius: var(--radius-lg) !important;
+            padding: .85rem !important;
+          }
+
+          [data-testid="stChatMessageContent"] p {
+            font-size: .92rem;
+            line-height: 1.65;
+          }
+
+          [data-testid="stChatInput"] {
+            border-radius: var(--radius-lg) !important;
+            background: var(--panel2) !important;
+            border: 1px solid var(--border2) !important;
+          }
+
+          [data-testid="stChatInput"] textarea {
+            background: transparent !important;
+            border: none !important;
+          }
+
+          /* ─────────── METRICS ─────────── */
+          div[data-testid="stMetric"] {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 1rem;
+          }
+
+          div[data-testid="stMetric"] [data-testid="stMetricLabel"] {
+            font-family: var(--font-head);
+            font-size: .7rem;
+            font-weight: 700;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            color: var(--muted) !important;
+          }
+
+          div[data-testid="stMetric"] [data-testid="stMetricValue"] {
+            font-family: var(--font-head);
+            font-weight: 800;
+            color: #fff !important;
+          }
+
+          /* ─────────── DATAFRAME ─────────── */
+          div[data-testid="stDataFrame"],
+          div[data-testid="stTable"] {
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            border: 1px solid var(--border);
+          }
+
+          /* ─────────── EXPANDER ─────────── */
+          div[data-testid="stExpander"] {
+            background: var(--panel2) !important;
+            border: 1px solid var(--border) !important;
+            border-radius: var(--radius) !important;
+          }
+
+          div[data-testid="stExpander"] summary {
+            font-family: var(--font-head);
+            font-size: .82rem;
+            font-weight: 600;
+            color: var(--muted) !important;
+          }
+
+          div[data-testid="stExpander"] summary:hover {
+            color: var(--text) !important;
+          }
+
+          /* ─────────── CONTAINERS WITH BORDER ─────────── */
+          div[data-testid="stVerticalBlockBorderWrapper"] {
+            border: 1px solid var(--border) !important;
+            border-radius: var(--radius-lg) !important;
+            background: var(--panel) !important;
+          }
+
+          /* ─────────── ALERTS ─────────── */
+          div[data-testid="stAlert"] {
+            border-radius: var(--radius) !important;
+            border: 1px solid var(--border) !important;
+            font-family: var(--font-body) !important;
+          }
+
+          /* ─────────── CODE ─────────── */
+          .stCode, pre {
+            border-radius: var(--radius) !important;
+            border: 1px solid var(--border) !important;
+          }
+
+          /* ─────────── SPINNER ─────────── */
+          .stSpinner > div { border-top-color: var(--red) !important; }
+
+          /* ─────────── HIDE DEFAULT STREAMLIT CHROME ─────────── */
+          footer, #MainMenu, [data-testid="stToolbar"] { visibility: hidden; }
+
+          /* ─────────── SCROLLBAR ─────────── */
+          ::-webkit-scrollbar { width: 5px; height: 5px; }
+          ::-webkit-scrollbar-track { background: transparent; }
+          ::-webkit-scrollbar-thumb { background: rgba(255,255,255,.12); border-radius: 999px; }
+          ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,.22); }
+
+          /* ─────────── SELECT SLIDER OVERRIDE ─────────── */
+          .stSelectSlider [data-baseweb="slider"] [role="slider"] {
+            background: var(--red) !important;
+          }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+    # Store plot template
+    st.session_state.plot_template = "plotly_dark"
 
 
-# ─────────────────────────────────────────────────────────────
-#  UI HELPER COMPONENTS
-# ─────────────────────────────────────────────────────────────
+# ─────────────────────────── HELPERS ────────────────────────────
+
 def hero(title, copy, eyebrow="Zain 360 Copilot"):
-    logo_html = (
-        f'<img class="hero-logo" src="{LOGO_DATA_URI}" alt="Zain Logo">'
-        if LOGO_DATA_URI else ""
-    )
-    st.markdown(f"""
-<div class="hero-card">
-  <div class="hero-eyebrow">{eyebrow}</div>
-  <div class="hero-title">{title}</div>
-  <div class="hero-copy">{copy}</div>
-  {logo_html}
-</div>""", unsafe_allow_html=True)
-
-
-def kpi_card(label, value, note="", badge_text="", badge_type="gray"):
-    """KPI card with optional coloured badge pill."""
-    badge_html = (
-        f'<span class="kpi-badge {badge_type}">{badge_text}</span>'
-        if badge_text else ""
-    )
-    st.markdown(f"""
-<div class="kpi-card">
-  <div class="kpi-top">
-    <div class="kpi-label">{label}</div>
-    {badge_html}
-  </div>
-  <div class="kpi-value">{value}</div>
-  <div class="kpi-divider"></div>
-  <div class="kpi-note">{note}</div>
-</div>""", unsafe_allow_html=True)
-
-
-def source_badge(source_text):
-    """Coloured source badge above assistant chat messages."""
-    s = (source_text or "").lower()
-    if "sql" in s:
-        cls, label = "source-sql", "SQL Agent"
-    elif "rag" in s or "cache" in s or "memory" in s:
-        cls, label = "source-rag", "RAG Memory"
-    elif "error" in s:
-        cls, label = "source-err", "Error"
-    else:
-        cls, label = "source-cache", source_text or "Agent"
+    logo_html = ""
+    if LOGO_DATA_URI:
+        logo_html = f"""
+        <div class="hero-logo-wrap">
+          <img src="{LOGO_DATA_URI}" alt="Zain Logo">
+        </div>"""
     st.markdown(
-        f'<span class="source-badge {cls}">{label}</span>',
+        f"""
+        <div class="hero">
+          <div class="hero-eyebrow">◆ {eyebrow}</div>
+          <div class="hero-title">{title}</div>
+          <p class="hero-copy">{copy}</p>
+          {logo_html}
+        </div>
+        """,
         unsafe_allow_html=True,
     )
 
 
-def msg_timestamp(ts_str, align="right"):
+def kpi_card(label, value, note=""):
     st.markdown(
-        f'<div class="msg-ts {align}">{ts_str}</div>',
+        f"""
+        <div class="kpi">
+          <div class="kpi-label">{label}</div>
+          <div class="kpi-value">{value}</div>
+          <div class="kpi-note">{note}</div>
+        </div>
+        """,
         unsafe_allow_html=True,
     )
 
 
-def empty_state(icon, title, subtitle):
-    st.markdown(f"""
-<div class="empty-state">
-  <div class="empty-state-icon">{icon}</div>
-  <div class="empty-state-title">{title}</div>
-  <div class="empty-state-sub">{subtitle}</div>
-</div>""", unsafe_allow_html=True)
-
-
-def tip_card(text):
-    st.markdown(f'<div class="tip-card">💡 {text}</div>', unsafe_allow_html=True)
-
-
-def risk_badge(level):
-    cls = {"high": "badge-high", "medium": "badge-med", "low": "badge-low"}.get(
-        str(level).lower(), "badge-low"
+def section_header(title, sub=""):
+    sub_html = f'<span>{sub}</span>' if sub else ""
+    st.markdown(
+        f'<div class="section-hd"><h3>{title}</h3>{sub_html}</div>',
+        unsafe_allow_html=True,
     )
-    return f'<span class="badge {cls}">{level}</span>'
-
-
-def shell_start():
-    st.markdown('<div class="shell-card">', unsafe_allow_html=True)
-
-
-def shell_end():
-    st.markdown("</div>", unsafe_allow_html=True)
 
 
 def format_num(value, suffix=""):
@@ -785,7 +918,7 @@ def format_num(value, suffix=""):
             return f"{value/1_000_000:.2f}M{suffix}"
         if abs(value) >= 1_000:
             return f"{value/1_000:.1f}K{suffix}"
-        if float(value).is_integer():
+        if value == int(value):
             return f"{int(value):,}{suffix}"
         return f"{value:,.2f}{suffix}"
     except Exception:
@@ -794,24 +927,35 @@ def format_num(value, suffix=""):
 
 def plotly_layout(fig, height=400, legend=True):
     fig.update_layout(
-        template=st.session_state.get("plot_template", "plotly_dark"),
+        template="plotly_dark",
         height=height,
-        margin=dict(l=20, r=20, t=55, b=20),
+        margin=dict(l=20, r=20, t=48, b=20),
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
-        font=dict(size=12),
-        legend=dict(orientation="h", yanchor="bottom", y=1.02,
-                    xanchor="right", x=1) if legend else None,
+        font=dict(family="DM Sans, sans-serif", size=12, color="#8A92A6"),
+        title_font=dict(family="Syne, sans-serif", size=14, color="#EEF0F5"),
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="right",
+            x=1,
+            font=dict(size=11),
+        ) if legend else None,
+        xaxis=dict(gridcolor="rgba(255,255,255,.05)", linecolor="rgba(255,255,255,.06)"),
+        yaxis=dict(gridcolor="rgba(255,255,255,.05)", linecolor="rgba(255,255,255,.06)"),
+        colorway=["#C8102E", "#FF5B70", "#22D3A0", "#F5BE47", "#7B94FF", "#FF9F52"],
     )
     return fig
 
 
-def build_chart(df, chart_type, title, x="label", y="value", color=None, height=410):
+def build_chart(df, chart_type, title, x="label", y="value", color=None, height=380):
     if df is None or df.empty:
-        empty_state("📭", "No data", "No data available for this visual.")
+        st.info("No data available for this visual.")
         return
-    template = st.session_state.get("plot_template", "plotly_dark")
-    common   = dict(template=template, height=height, title=title)
+
+    common = dict(template="plotly_dark", height=height, title=title,
+                  color_discrete_sequence=["#C8102E", "#FF5B70", "#22D3A0", "#F5BE47", "#7B94FF", "#FF9F52"])
     if chart_type == "pie":
         fig = px.pie(df, names=x, values=y, **common)
     elif chart_type == "doughnut":
@@ -832,58 +976,35 @@ def render_chart(chart):
     if not rows:
         st.warning(chart.get("summary") or "No matching data was found for this chart request.")
         return
+
     df = pd.DataFrame(rows)
-    st.markdown(f"""
-<div class="section-title">
-  <h3>{chart.get('title', 'Chart')}</h3>
-  <span>{chart.get('metric', 'Value')}</span>
-</div>""", unsafe_allow_html=True)
-    build_chart(
-        df=df, chart_type=chart.get("chart_type", "bar"),
-        title=chart.get("title", "Chart"), x="label", y="value",
-    )
+    section_header(chart.get("title", "Chart"), chart.get("metric", ""))
+    build_chart(df, chart.get("chart_type", "bar"), chart.get("title", "Chart"), x="label", y="value")
+
     if chart.get("summary"):
         st.caption(chart["summary"])
     with st.expander("View chart data"):
         st.dataframe(df, use_container_width=True, hide_index=True)
         st.download_button(
-            "⬇ Export chart data",
+            "Export chart data",
             df.to_csv(index=False).encode("utf-8"),
-            file_name="chart_data.csv", mime="text/csv", use_container_width=True,
+            file_name="chart_data.csv",
+            mime="text/csv",
+            use_container_width=True,
         )
-
-
-def chat_to_markdown(chat):
-    lines = [f"# {chat['title']}", f"Created: {chat.get('created_at', '')}", ""]
-    for m in chat["messages"]:
-        role = "User" if m["role"] == "user" else "Assistant"
-        lines.append(f"## {role}")
-        if m.get("source"):
-            lines.append(f"Agent: {m['source']}")
-        lines.append("")
-        lines.append(m.get("content", ""))
-        if m.get("sql"):
-            lines += ["", "```sql", m["sql"], "```", ""]
-    return "\n".join(lines)
-
-
-def stream_markdown(text):
-    placeholder = st.empty()
-    rendered    = ""
-    for token in str(text).split(" "):
-        rendered += token + " "
-        placeholder.markdown(rendered)
-        time.sleep(0.006)
 
 
 def build_chat_history_context(chat, limit=8):
     history = []
-    for m in chat.get("messages", [])[-limit:]:
-        item = {"role": m.get("role", ""), "content": str(m.get("content", ""))[:4000]}
-        if m.get("source"):
-            item["source"] = m.get("source", "")
-        if m.get("sql"):
-            item["sql"] = m.get("sql", "")
+    for message in chat.get("messages", [])[-limit:]:
+        item = {
+            "role": message.get("role", ""),
+            "content": str(message.get("content", ""))[:4000],
+        }
+        if message.get("source"):
+            item["source"] = message.get("source", "")
+        if message.get("sql"):
+            item["sql"] = message.get("sql", "")
         history.append(item)
     return history
 
@@ -905,44 +1026,47 @@ def ask_and_store(prompt):
     if chat["title"] == "New Chat":
         chat["title"] = title_from_question(prompt)
     chat_history = build_chat_history_context(chat)
-    chat["messages"].append({
-        "role": "user", "content": prompt, "sql": "",
-        "ts": datetime.now().strftime("%H:%M"),
-    })
+    chat["messages"].append({"role": "user", "content": prompt, "sql": ""})
+
     try:
-        with st.spinner("Analysing the database and preparing the answer…"):
+        with st.spinner("Analyzing the database…"):
             payload = call_chat_backend(prompt, chat_history)
-        answer      = payload.get("answer", "No answer was returned.")
-        sql         = payload.get("sql", "")
-        src         = payload.get("source", "SQL Agent")
-        matched_q   = payload.get("matched_question", "")
+        answer = payload.get("answer", "No answer was returned.")
+        sql = payload.get("sql", "")
+        source = payload.get("source", "SQL Agent")
+        matched_question = payload.get("matched_question", "")
         match_score = payload.get("match_score", "")
     except Exception as exc:
         answer = (
             "I could not complete this request. "
             f"Details: {type(exc).__name__}: {exc}. "
-            "Please confirm the OPENAI_API_KEY is configured if this question requires the SQL agent."
+            "Please confirm the OPENAI_API_KEY is configured."
         )
-        sql = ""; src = "Error"; matched_q = ""; match_score = ""
-    chat["messages"].append({
-        "role": "assistant", "content": answer,
-        "sql": sql, "source": src,
-        "matched_question": matched_q, "match_score": match_score,
-        "ts": datetime.now().strftime("%H:%M"),
-    })
+        sql = ""
+        source = "Error"
+        matched_question = ""
+        match_score = ""
+
+    chat["messages"].append(
+        {
+            "role": "assistant",
+            "content": answer,
+            "sql": sql,
+            "source": source,
+            "matched_question": matched_question,
+            "match_score": match_score,
+        }
+    )
 
 
-# ─────────────────────────────────────────────────────────────
-#  SQL RUNNER
-# ─────────────────────────────────────────────────────────────
 def run_sql_callback(key_prefix):
     sql = st.session_state.get(f"{key_prefix}_sql_editor", "").strip()
     try:
         st.session_state[f"{key_prefix}_sql_result"] = execute_sql_query(sql)
-        st.session_state[f"{key_prefix}_sql_error"]  = ""
+        st.session_state[f"{key_prefix}_sql_error"] = ""
     except Exception as exc:
         st.session_state[f"{key_prefix}_sql_result"] = None
-        st.session_state[f"{key_prefix}_sql_error"]  = f"{type(exc).__name__}: {exc}"
+        st.session_state[f"{key_prefix}_sql_error"] = f"{type(exc).__name__}: {exc}"
 
 
 def render_sql_runner(default_sql="", key_prefix="sql_runner"):
@@ -950,36 +1074,42 @@ def render_sql_runner(default_sql="", key_prefix="sql_runner"):
     if editor_key not in st.session_state:
         st.session_state[editor_key] = default_sql
 
-    st.markdown('<div class="sql-editor-wrap">', unsafe_allow_html=True)
-    st.text_area("SQL", height=200, key=editor_key,
-                 help="Only safe read-only SELECT queries are allowed.")
-    st.markdown("</div>", unsafe_allow_html=True)
+    st.text_area("SQL", height=180, key=editor_key, help="Only safe read-only SELECT queries are allowed.")
 
-    c1, c2, _ = st.columns([1, 1, 4])
-    with c1:
-        st.button("▶ Run Query", type="primary", key=f"{key_prefix}_run",
-                  on_click=run_sql_callback, args=(key_prefix,), use_container_width=True)
-    with c2:
-        if st.button("✕ Clear", key=f"{key_prefix}_clear", use_container_width=True):
+    col_run, col_clr, col_tip = st.columns([1, 1, 3])
+    with col_run:
+        st.button(
+            "▶  Run query",
+            type="primary",
+            key=f"{key_prefix}_run_button",
+            on_click=run_sql_callback,
+            args=(key_prefix,),
+            use_container_width=True,
+        )
+    with col_clr:
+        if st.button("✕  Clear", key=f"{key_prefix}_clear", use_container_width=True):
             st.session_state[f"{key_prefix}_sql_result"] = None
-            st.session_state[f"{key_prefix}_sql_error"]  = ""
+            st.session_state[f"{key_prefix}_sql_error"] = ""
             st.rerun()
+    with col_tip:
+        st.caption("Only SELECT statements are permitted. DDL/DML operations are blocked.")
 
-    error  = st.session_state.get(f"{key_prefix}_sql_error", "")
+    error = st.session_state.get(f"{key_prefix}_sql_error", "")
     result = st.session_state.get(f"{key_prefix}_sql_result")
-
     if error:
         st.error(f"Query failed: {error}")
     elif result:
         rows = result.get("rows", [])
-        st.success(f"✓ Returned {len(rows)} row(s).")
+        st.success(f"✓  Returned {len(rows):,} row(s).")
         if rows:
             df = pd.DataFrame(rows)
             st.dataframe(df, use_container_width=True, hide_index=True)
             st.download_button(
-                "⬇ Export as CSV",
+                "⬇  Export as CSV",
                 df.to_csv(index=False).encode("utf-8"),
-                file_name="sql_result.csv", mime="text/csv", use_container_width=True,
+                file_name="sql_result.csv",
+                mime="text/csv",
+                use_container_width=True,
             )
         else:
             st.info("Query ran successfully but returned no rows.")
@@ -987,11 +1117,8 @@ def render_sql_runner(default_sql="", key_prefix="sql_runner"):
             st.code(result.get("sql", ""), language="sql")
 
 
-# ─────────────────────────────────────────────────────────────
-#  ANALYTICS BUILDER
-# ─────────────────────────────────────────────────────────────
 def build_filtered_analytics(month_start, month_end, cities, segments, risk_levels, service_types):
-    where  = ["m.summary_month BETWEEN ? AND ?"]
+    where = ["m.summary_month BETWEEN ? AND ?"]
     params = [month_start, month_end]
     if cities:
         where.append("c.city IN (" + ",".join(["?"] * len(cities)) + ")")
@@ -1005,514 +1132,582 @@ def build_filtered_analytics(month_start, month_end, cities, segments, risk_leve
     if service_types:
         where.append("s.service_type IN (" + ",".join(["?"] * len(service_types)) + ")")
         params.extend(service_types)
-    ws = " AND ".join(where)
 
-    kpi_sql = f"""
+    where_sql = " AND ".join(where)
+    sql = f"""
         SELECT
-            COUNT(DISTINCT c.customer_id)      AS customers,
-            ROUND(SUM(m.monthly_revenue),2)    AS revenue,
-            ROUND(AVG(ch.churn_score),4)       AS avg_churn,
-            ROUND(AVG(m.data_usage_gb),2)      AS avg_data,
-            COUNT(DISTINCT comp.complaint_id)  AS complaints,
-            COUNT(DISTINCT si.interaction_id)  AS support
+            m.summary_month, c.customer_id, c.full_name, c.city, c.governorate,
+            c.customer_segment, c.customer_type, c.status AS customer_status,
+            s.service_type, ch.churn_score, ch.risk_level, ch.main_risk_reason,
+            ch.recommended_action, vs.value_segment, vs.arpu_jod,
+            vs.total_revenue_6m_jod, m.total_revenue_jod, m.voice_minutes,
+            m.data_used_gb, m.sms_count, m.support_interactions_count,
+            m.complaints_count, m.payment_delay_days
         FROM customer_monthly_summary m
         JOIN customers c ON c.customer_id = m.customer_id
-        LEFT JOIN customer_churn_scores ch ON ch.customer_id = m.customer_id
-        LEFT JOIN subscriptions s ON s.customer_id = c.customer_id
-        LEFT JOIN complaints comp ON comp.customer_id = c.customer_id
-            AND strftime('%Y-%m', comp.created_at) BETWEEN ? AND ?
-        LEFT JOIN support_interactions si ON si.customer_id = c.customer_id
-            AND strftime('%Y-%m', si.interaction_date) BETWEEN ? AND ?
-        WHERE {ws}"""
-    extra = [month_start, month_end, month_start, month_end]
-    kpi_df = query_df(kpi_sql, tuple(extra + params))
-
-    revenue_sql = f"""
-        SELECT m.summary_month AS label, ROUND(SUM(m.monthly_revenue),2) AS value
-        FROM customer_monthly_summary m
-        JOIN customers c ON c.customer_id = m.customer_id
-        LEFT JOIN customer_churn_scores ch ON ch.customer_id = m.customer_id
-        LEFT JOIN subscriptions s ON s.customer_id = c.customer_id
-        WHERE {ws} GROUP BY m.summary_month ORDER BY m.summary_month"""
-    risk_sql = f"""
-        SELECT ch.risk_level AS label, COUNT(*) AS value
-        FROM customer_churn_scores ch
-        JOIN customers c ON c.customer_id = ch.customer_id
-        LEFT JOIN customer_monthly_summary m ON m.customer_id = c.customer_id
-            AND m.summary_month BETWEEN ? AND ?
-        LEFT JOIN subscriptions s ON s.customer_id = c.customer_id
-        WHERE {ws} GROUP BY ch.risk_level"""
-    seg_sql = f"""
-        SELECT c.customer_segment AS label, ROUND(SUM(m.monthly_revenue),2) AS value
-        FROM customer_monthly_summary m
-        JOIN customers c ON c.customer_id = m.customer_id
-        LEFT JOIN customer_churn_scores ch ON ch.customer_id = m.customer_id
-        LEFT JOIN subscriptions s ON s.customer_id = c.customer_id
-        WHERE {ws} GROUP BY c.customer_segment ORDER BY value DESC"""
-    city_sql = f"""
-        SELECT c.city AS label, COUNT(DISTINCT c.customer_id) AS value
-        FROM customers c
-        JOIN customer_monthly_summary m ON m.customer_id = c.customer_id
         LEFT JOIN customer_churn_scores ch ON ch.customer_id = c.customer_id
-        LEFT JOIN subscriptions s ON s.customer_id = c.customer_id
-        WHERE {ws} GROUP BY c.city ORDER BY value DESC LIMIT 12"""
-    usage_sql = f"""
-        SELECT m.summary_month AS label, ROUND(AVG(m.data_usage_gb),2) AS value
-        FROM customer_monthly_summary m
-        JOIN customers c ON c.customer_id = m.customer_id
-        LEFT JOIN customer_churn_scores ch ON ch.customer_id = m.customer_id
-        LEFT JOIN subscriptions s ON s.customer_id = c.customer_id
-        WHERE {ws} GROUP BY m.summary_month ORDER BY m.summary_month"""
-    cust_sql = f"""
-        SELECT c.customer_segment AS label, COUNT(DISTINCT c.customer_id) AS value
-        FROM customers c
-        JOIN customer_monthly_summary m ON m.customer_id = c.customer_id
-        LEFT JOIN customer_churn_scores ch ON ch.customer_id = m.customer_id
-        LEFT JOIN subscriptions s ON s.customer_id = c.customer_id
-        WHERE {ws} GROUP BY c.customer_segment"""
+        LEFT JOIN customer_value_segments vs ON vs.customer_id = c.customer_id
+        LEFT JOIN subscriptions s ON s.subscription_id = m.subscription_id
+        WHERE {where_sql}
+    """
+    df = query_df(sql, tuple(params))
+    return df, sql, params
 
-    p  = tuple(params)
-    p2 = tuple([month_start, month_end] + params)
-    return {
-        "kpi":     kpi_df,
-        "revenue": query_df(revenue_sql, p),
-        "risk":    query_df(risk_sql,    p2),
-        "seg":     query_df(seg_sql,     p),
-        "city":    query_df(city_sql,    p),
-        "usage":   query_df(usage_sql,   p),
-        "cust":    query_df(cust_sql,    p),
+
+# ─────────────────────────── PAGES ────────────────────────────
+
+def show_chat():
+    chat = current_chat()
+    hero(
+        "Customer 360 Chat",
+        "Ask direct business questions in plain English. Your chat sessions are saved during this browser session.",
+        "Conversational analytics",
+    )
+
+    section_header("Quick prompts", "Start with a common question")
+    q_cols = st.columns(4)
+    for i, question in enumerate(SUGGESTED_QUESTIONS[:4]):
+        with q_cols[i]:
+            label = question[:52] + "…" if len(question) > 52 else question
+            if st.button(label, key=f"quick_{i}", use_container_width=True):
+                st.session_state.pending_prompt = question
+                st.rerun()
+
+    st.markdown("<hr>", unsafe_allow_html=True)
+
+    for message in chat["messages"]:
+        with st.chat_message(message["role"]):
+            if message.get("source"):
+                st.caption(f"Answered by: {message['source']}")
+            st.markdown(message.get("content", ""))
+            if "RAG Agent" in message.get("source", "") and message.get("matched_question"):
+                score = message.get("match_score", "")
+                score_text = f"  ·  Similarity: {score}" if score != "" else ""
+                st.caption(f"Memory match: {message['matched_question']}{score_text}")
+            if message.get("sql"):
+                with st.expander("View generated SQL"):
+                    st.code(message["sql"], language="sql")
+
+    if st.session_state.pending_prompt:
+        pending = st.session_state.pending_prompt
+        st.session_state.pending_prompt = ""
+        ask_and_store(pending)
+        st.rerun()
+
+    prompt = st.chat_input("Ask about churn, customers, revenue, billing, campaigns, complaints, or network impact…")
+    if prompt:
+        ask_and_store(prompt)
+        st.rerun()
+
+
+def show_dynamic_analytics():
+    hero(
+        "Dynamic Analytics",
+        "Adjust filters, explore KPIs, and drill into charts by month, segment, risk, city, and service type.",
+        "Interactive BI",
+    )
+    options = filter_options()
+    months = options["months"]
+    if not months:
+        st.error("No monthly summary data is available.")
+        return
+
+    with st.container(border=True):
+        section_header("Filters", "Scope the dataset")
+        f1, f2, f3, f4, f5, f6 = st.columns([1.4, 1.2, 1.2, 1.2, 1.2, 1])
+        with f1:
+            month_start, month_end = st.select_slider(
+                "Month range", options=months, value=(months[0], months[-1])
+            )
+        with f2:
+            cities = st.multiselect("Cities", options["cities"], default=[])
+        with f3:
+            segments = st.multiselect("Segments", options["segments"], default=[])
+        with f4:
+            risk_levels = st.multiselect("Risk levels", options["risk_levels"], default=[])
+        with f5:
+            service_types = st.multiselect("Service types", options["service_types"], default=[])
+        with f6:
+            chart_label = st.selectbox("Chart style", list(CHART_TYPES.keys()), index=0)
+
+        qb1, qb2, qb3, qb4 = st.columns(4)
+        with qb1:
+            if st.button("⚠  High-risk only", use_container_width=True):
+                risk_levels = ["High"]
+        with qb2:
+            if st.button("★  VIP customers", use_container_width=True):
+                segments = ["VIP"] if "VIP" in options["segments"] else segments
+        with qb3:
+            if st.button("📍 Amman view", use_container_width=True):
+                cities = ["Amman"] if "Amman" in options["cities"] else cities
+        with qb4:
+            if st.button("↺  Reset all filters", use_container_width=True):
+                cities, segments, risk_levels, service_types = [], [], [], []
+
+    df, sql, params = build_filtered_analytics(month_start, month_end, cities, segments, risk_levels, service_types)
+    if df.empty:
+        st.warning("No records match the selected filters.")
+        with st.expander("SQL used"):
+            st.code(sql, language="sql")
+            st.json({"params": params})
+        return
+
+    unique_customers = df["customer_id"].nunique()
+    total_revenue = df["total_revenue_jod"].sum()
+    avg_churn = df["churn_score"].mean()
+    avg_data = df["data_used_gb"].mean()
+    complaints = df["complaints_count"].sum()
+    support = df["support_interactions_count"].sum()
+
+    k1, k2, k3, k4, k5, k6 = st.columns(6)
+    with k1: kpi_card("Customers", format_num(unique_customers), "Distinct filtered")
+    with k2: kpi_card("Revenue", format_num(total_revenue, " JOD"), "Filtered monthly")
+    with k3: kpi_card("Avg Churn", f"{avg_churn:.2f}", "Average score")
+    with k4: kpi_card("Avg Data", format_num(avg_data, " GB"), "Monthly usage")
+    with k5: kpi_card("Complaints", format_num(complaints), "In selected range")
+    with k6: kpi_card("Support", format_num(support), "Interactions")
+
+    chart_type = CHART_TYPES[chart_label]
+    chart_tabs = st.tabs(["📈 Revenue", "🔴 Risk", "🏷 Segments", "🗺 Cities", "📶 Usage", "👥 Customers"])
+
+    with chart_tabs[0]:
+        monthly = (
+            df.groupby("summary_month", as_index=False)["total_revenue_jod"]
+            .sum()
+            .rename(columns={"summary_month": "label", "total_revenue_jod": "value"})
+        )
+        build_chart(monthly, "area" if chart_type in {"pie", "doughnut"} else chart_type, "Revenue trend by month")
+
+    with chart_tabs[1]:
+        risk = (
+            df.drop_duplicates("customer_id")
+            .groupby("risk_level", as_index=False)["customer_id"]
+            .count()
+            .rename(columns={"risk_level": "label", "customer_id": "value"})
+        )
+        build_chart(risk, "doughnut" if chart_type in {"line", "area"} else chart_type, "Customers by churn risk")
+
+    with chart_tabs[2]:
+        seg = (
+            df.groupby("customer_segment", as_index=False)["total_revenue_jod"]
+            .sum()
+            .rename(columns={"customer_segment": "label", "total_revenue_jod": "value"})
+            .sort_values("value", ascending=False)
+        )
+        build_chart(seg, "horizontal_bar" if chart_type in {"pie", "doughnut"} else chart_type, "Revenue by segment")
+
+    with chart_tabs[3]:
+        city = (
+            df.drop_duplicates("customer_id")
+            .groupby("city", as_index=False)["customer_id"]
+            .count()
+            .rename(columns={"city": "label", "customer_id": "value"})
+            .sort_values("value", ascending=False)
+            .head(12)
+        )
+        build_chart(city, "horizontal_bar", "Top cities by customer count")
+
+    with chart_tabs[4]:
+        usage = (
+            df.groupby("summary_month", as_index=False)[["data_used_gb", "voice_minutes", "sms_count"]]
+            .mean()
+            .melt(id_vars="summary_month", var_name="metric", value_name="value")
+        )
+        fig = px.line(
+            usage, x="summary_month", y="value", color="metric", markers=True,
+            title="Average usage trend",
+            template="plotly_dark",
+            color_discrete_sequence=["#C8102E", "#22D3A0", "#F5BE47"],
+        )
+        st.plotly_chart(plotly_layout(fig), use_container_width=True)
+
+    with chart_tabs[5]:
+        customer_view = (
+            df.groupby(
+                ["customer_id", "full_name", "city", "customer_segment", "risk_level", "main_risk_reason"],
+                as_index=False,
+            )
+            .agg(
+                total_revenue_jod=("total_revenue_jod", "sum"),
+                avg_churn_score=("churn_score", "mean"),
+                complaints=("complaints_count", "sum"),
+                support_interactions=("support_interactions_count", "sum"),
+                payment_delay_days=("payment_delay_days", "max"),
+            )
+            .sort_values(["avg_churn_score", "total_revenue_jod"], ascending=[False, False])
+        )
+        st.dataframe(customer_view, use_container_width=True, hide_index=True)
+        st.download_button(
+            "⬇  Export filtered customers",
+            customer_view.to_csv(index=False).encode("utf-8"),
+            file_name="filtered_customers.csv",
+            mime="text/csv",
+            use_container_width=True,
+        )
+
+    with st.expander("Show SQL + parameters"):
+        st.code(sql, language="sql")
+        st.json({"params": params})
+
+
+def show_chart_builder():
+    hero(
+        "Chart Builder",
+        "Describe the chart you want in plain language. The app writes a safe query and renders the result instantly.",
+        "Natural-language visuals",
+    )
+
+    with st.container(border=True):
+        question = st.text_area(
+            "Chart description",
+            value="Build a chart based on customer with ID = 9 by their complaints type and number.",
+            height=110,
+        )
+        c1, c2, c3 = st.columns([1, 1, 2])
+        with c1:
+            chart_label = st.selectbox("Chart type", list(CHART_TYPES.keys()))
+        with c2:
+            run = st.button("▶  Build chart", type="primary", use_container_width=True)
+        with c3:
+            st.caption("Tip: describe one clear metric — e.g. 'churn by city', 'conversion by campaign', 'complaints by category'.")
+
+    if run:
+        with st.spinner("Querying database and building chart…"):
+            st.session_state.last_chart = build_chart_from_question(question, CHART_TYPES[chart_label])
+
+    if st.session_state.last_chart:
+        st.markdown('<div class="card">', unsafe_allow_html=True)
+        render_chart(st.session_state.last_chart)
+        st.markdown("</div>", unsafe_allow_html=True)
+
+
+def show_sql_workspace():
+    hero(
+        "SQL Workspace",
+        "A clean read-only SQL environment for analysts. Only SELECT statements are permitted — no schema mutations.",
+        "Safe query runner",
+    )
+
+    templates = {
+        "Total customers": "SELECT COUNT(*) AS total_customers FROM customers",
+        "Top churn customers": """SELECT c.customer_id, c.full_name, c.city, c.customer_segment,
+       ch.churn_score, ch.risk_level, ch.main_risk_reason
+FROM customer_churn_scores ch
+JOIN customers c ON c.customer_id = ch.customer_id
+ORDER BY ch.churn_score DESC
+LIMIT 10""",
+        "Revenue by segment": """SELECT vs.value_segment,
+       COUNT(*) AS customers,
+       ROUND(AVG(vs.arpu_jod), 2) AS avg_arpu,
+       ROUND(SUM(vs.total_revenue_6m_jod), 2) AS revenue_6m
+FROM customer_value_segments vs
+GROUP BY vs.value_segment
+ORDER BY revenue_6m DESC""",
+        "Open complaints": """SELECT complaint_category, severity, status, COUNT(*) AS total
+FROM complaints
+WHERE status != 'Resolved'
+GROUP BY complaint_category, severity, status
+ORDER BY total DESC""",
     }
 
+    t_col, b_col = st.columns([2, 1])
+    with t_col:
+        selected_template = st.selectbox("Query template", list(templates.keys()))
+    with b_col:
+        st.write("")
+        if st.button("⬆  Load template", use_container_width=True):
+            st.session_state["standalone_sql_editor"] = templates[selected_template]
+            st.rerun()
 
-# ─────────────────────────────────────────────────────────────
-#  SIDEBAR
-# ─────────────────────────────────────────────────────────────
-def render_sidebar():
-    ensure_state()
-    with st.sidebar:
-        # Brand card
-        logo_img = (
-            f'<img class="brand-logo-img" src="{LOGO_DATA_URI}" alt="Zain">'
-            if LOGO_DATA_URI
-            else '<div class="brand-logo-img" style="background:rgba(232,25,44,.3);'
-                 'display:flex;align-items:center;justify-content:center;'
-                 'font-weight:900;font-size:1.2rem;color:#fff">Z</div>'
+    render_sql_runner(templates[selected_template], key_prefix="standalone")
+
+
+def show_suggested_questions():
+    hero(
+        "Prompt Library",
+        "Use ready-made business prompts to generate database-backed answers in seconds.",
+        "Suggested workflows",
+    )
+
+    cols = st.columns(3)
+    for i, question in enumerate(SUGGESTED_QUESTIONS):
+        with cols[i % 3]:
+            st.markdown(
+                f"""
+                <div class="prompt-card">
+                  <div class="prompt-card-num">Use case {i + 1:02d}</div>
+                  <p>{question}</p>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+            if st.button("Send to AI Chat →", key=f"suggested_{i}", use_container_width=True):
+                st.session_state.pending_prompt = question
+                st.session_state.page = "Chat"
+                st.rerun()
+
+
+def show_customer_insights():
+    hero(
+        "Customer Insights",
+        "Search for any customer and view their full 360° profile — churn risk, value, billing, complaints, support, and usage.",
+        "Single customer view",
+    )
+
+    search = st.text_input("Search customer", placeholder="Enter customer ID, name, phone, city, or email")
+    if search.strip():
+        like = f"%{search.strip()}%"
+        candidates = query_df(
+            """SELECT customer_id, full_name, city, customer_segment, phone_number, email
+               FROM customers
+               WHERE CAST(customer_id AS TEXT) LIKE ?
+                  OR full_name LIKE ?
+                  OR phone_number LIKE ?
+                  OR email LIKE ?
+                  OR city LIKE ?
+               ORDER BY customer_id LIMIT 100""",
+            (like, like, like, like, like),
         )
-        st.markdown(f"""
-<div class="brand-card">
-  <div class="brand-card-inner">
-    {logo_img}
-    <div class="brand-title">Customer 360 AI Copilot</div>
-  </div>
-  <div class="brand-copy">Premium analytics workspace for customers, churn, revenue,
-    complaints, support, campaigns, and network signals.</div>
-  <div class="chip-row">
-    <span class="chip">SQL-backed</span>
-    <span class="chip">AI chat</span>
-    <span class="chip">Dynamic BI</span>
-  </div>
-</div>""", unsafe_allow_html=True)
+    else:
+        candidates = query_df(
+            """SELECT customer_id, full_name, city, customer_segment, phone_number, email
+               FROM customers ORDER BY customer_id LIMIT 100"""
+        )
 
-        # Active workspace indicator
-        page = st.session_state.page
-        for page_key, label, icon, sub in NAV_ITEMS:
-            if page_key == page:
-                st.markdown(
-                    f'<div class="active-page"><b>{icon} {label}</b>'
-                    f'<small>{sub}</small></div>',
-                    unsafe_allow_html=True,
-                )
-                break
+    if candidates.empty:
+        st.warning("No matching customers found.")
+        return
 
-        # New chat button
-        if st.button("＋  New Chat", key="new_chat_btn", use_container_width=True):
+    labels = [
+        f"{row.customer_id} · {row.full_name} · {row.city} · {row.customer_segment}"
+        for row in candidates.itertuples()
+    ]
+    selected_label = st.selectbox("Select customer", labels)
+    customer_id = int(selected_label.split(" · ")[0])
+
+    customer = query_df(
+        """SELECT c.*, ch.churn_score, ch.risk_level, ch.main_risk_reason, ch.recommended_action,
+                  vs.value_segment, vs.arpu_jod, vs.total_revenue_6m_jod, vs.lifetime_months
+           FROM customers c
+           LEFT JOIN customer_churn_scores ch ON ch.customer_id = c.customer_id
+           LEFT JOIN customer_value_segments vs ON vs.customer_id = c.customer_id
+           WHERE c.customer_id = ?""",
+        (customer_id,),
+    ).iloc[0]
+
+    c1, c2, c3, c4 = st.columns(4)
+    with c1: kpi_card("Customer", customer["full_name"], f"ID {customer_id}")
+    with c2: kpi_card("Risk Level", customer.get("risk_level", "N/A"), f"Score {customer.get('churn_score', 0):.2f}")
+    with c3: kpi_card("Value Segment", customer.get("value_segment", "N/A"), format_num(customer.get("arpu_jod", 0), " JOD ARPU"))
+    with c4: kpi_card("6M Revenue", format_num(customer.get("total_revenue_6m_jod", 0), " JOD"), f"{customer.get('lifetime_months', 0)} months lifetime")
+
+    st.markdown(
+        f"""
+        <div class="card">
+          <div style="margin-bottom:.65rem;">
+            <span class="badge">{customer.get("customer_segment", "Segment")}</span>
+            <span class="badge">{customer.get("city", "City")}</span>
+            <span class="badge">{customer.get("preferred_language", "Language")}</span>
+            <span class="badge">{customer.get("customer_status", customer.get("status", "Status"))}</span>
+          </div>
+          <div style="font-family:var(--font-head);font-size:.75rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin-bottom:.3rem;">Recommended action</div>
+          <p style="color:var(--text);font-size:.9rem;margin:0 0 .9rem;">{customer.get("recommended_action", "No recommended action available.")}</p>
+          <div style="font-family:var(--font-head);font-size:.75rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin-bottom:.3rem;">Main risk reason</div>
+          <p style="color:var(--muted);font-size:.9rem;margin:0;">{customer.get("main_risk_reason", "No risk reason available.")}</p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    tabs = st.tabs(["👤 Profile", "📡 Subscriptions", "💳 Billing", "⚠ Complaints", "🎧 Support", "📊 Monthly usage", "🤖 Ask AI"])
+
+    with tabs[0]:
+        profile_df = customer.to_frame(name="value").reset_index().rename(columns={"index": "field"})
+        st.dataframe(profile_df, use_container_width=True, hide_index=True)
+        st.download_button(
+            "⬇  Export profile",
+            profile_df.to_csv(index=False).encode("utf-8"),
+            file_name=f"customer_{customer_id}_profile.csv",
+            mime="text/csv",
+            use_container_width=True,
+        )
+
+    with tabs[1]:
+        subs = query_df(
+            """SELECT s.subscription_id, s.msisdn, s.service_type, s.activation_date,
+                      s.contract_end_date, s.status, s.auto_renewal_flag,
+                      s.primary_subscription_flag, p.plan_name, p.plan_category,
+                      p.monthly_fee_jod, p.technology
+               FROM subscriptions s
+               LEFT JOIN plans p ON p.plan_id = s.plan_id
+               WHERE s.customer_id = ?
+               ORDER BY s.primary_subscription_flag DESC, s.activation_date DESC""",
+            (customer_id,),
+        )
+        st.dataframe(subs, use_container_width=True, hide_index=True)
+
+    with tabs[2]:
+        billing = query_df(
+            """SELECT i.invoice_id, i.issue_date, i.due_date, i.total_amount_jod,
+                      i.payment_status, i.days_overdue, a.account_number, a.account_type
+               FROM invoices i
+               JOIN accounts a ON a.account_id = i.account_id
+               WHERE a.customer_id = ?
+               ORDER BY i.issue_date DESC LIMIT 50""",
+            (customer_id,),
+        )
+        st.dataframe(billing, use_container_width=True, hide_index=True)
+
+    with tabs[3]:
+        complaints = query_df(
+            """SELECT complaint_id, complaint_date, complaint_category, severity, status,
+                      resolved_date, compensation_amount_jod, complaint_description
+               FROM complaints WHERE customer_id = ?
+               ORDER BY complaint_date DESC LIMIT 50""",
+            (customer_id,),
+        )
+        st.dataframe(complaints, use_container_width=True, hide_index=True)
+
+    with tabs[4]:
+        support = query_df(
+            """SELECT interaction_id, interaction_datetime, channel, reason_category, issue_type,
+                      priority, resolution_status, resolution_time_minutes, customer_sentiment
+               FROM support_interactions WHERE customer_id = ?
+               ORDER BY interaction_datetime DESC LIMIT 50""",
+            (customer_id,),
+        )
+        st.dataframe(support, use_container_width=True, hide_index=True)
+
+    with tabs[5]:
+        monthly = query_df(
+            """SELECT summary_month, total_revenue_jod, voice_minutes, data_used_gb, sms_count,
+                      support_interactions_count, complaints_count, payment_delay_days, churn_score
+               FROM customer_monthly_summary WHERE customer_id = ?
+               ORDER BY summary_month""",
+            (customer_id,),
+        )
+        if monthly.empty:
+            st.info("No monthly usage data available for this customer.")
+        else:
+            fig = px.line(
+                monthly,
+                x="summary_month",
+                y=["total_revenue_jod", "data_used_gb", "churn_score"],
+                markers=True,
+                title="Customer monthly trend",
+                template="plotly_dark",
+                color_discrete_sequence=["#C8102E", "#22D3A0", "#F5BE47"],
+            )
+            st.plotly_chart(plotly_layout(fig), use_container_width=True)
+            st.dataframe(monthly, use_container_width=True, hide_index=True)
+
+    with tabs[6]:
+        suggested = f"Show me the full profile, plan, complaints, churn risk, and recommended action for customer {customer_id}."
+        st.code(suggested)
+        if st.button("Send to AI Chat →", type="primary", use_container_width=True):
+            st.session_state.pending_prompt = suggested
+            st.session_state.page = "Chat"
+            st.rerun()
+
+
+def show_data_catalog():
+    hero(
+        "Data Catalog",
+        "Browse the SQLite Customer 360 schema, table sizes, and field definitions.",
+        "Schema explorer",
+    )
+
+    tables = list_tables()
+    table_counts = []
+    for table in tables:
+        try:
+            count = query_df(f'SELECT COUNT(*) AS rows FROM "{table}"')["rows"].iloc[0]
+        except Exception:
+            count = 0
+        table_counts.append({"table": table, "rows": count})
+
+    inventory = pd.DataFrame(table_counts).sort_values("rows", ascending=False)
+    col1, col2 = st.columns([1, 2])
+    with col1:
+        st.dataframe(inventory, use_container_width=True, hide_index=True)
+        selected = st.selectbox("Inspect table", tables)
+    with col2:
+        cols_df = table_columns(selected)
+        section_header(f"{selected} columns")
+        st.dataframe(cols_df[["name", "type", "notnull", "pk"]], use_container_width=True, hide_index=True)
+        section_header("Sample rows (10)")
+        sample = query_df(f'SELECT * FROM "{selected}" LIMIT 10')
+        st.dataframe(sample, use_container_width=True, hide_index=True)
+
+    with st.expander("Export catalog"):
+        st.download_button(
+            "⬇  Download table inventory",
+            inventory.to_csv(index=False).encode("utf-8"),
+            file_name="data_catalog.csv",
+            mime="text/csv",
+            use_container_width=True,
+        )
+
+
+# ─────────────────────────── SIDEBAR ────────────────────────────
+
+def render_sidebar():
+    with st.sidebar:
+        st.markdown(
+            f"""
+            <div class="sb-brand">
+              <div class="sb-brand-mark">{'<img src="' + LOGO_DATA_URI + '" style="width:22px;opacity:.85;">' if LOGO_DATA_URI else '📊'}</div>
+              <div class="sb-brand-text">
+                <div class="sb-brand-title">Customer 360</div>
+                <div class="sb-brand-sub">AI Copilot · Zain</div>
+              </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+        if st.button("＋  New Chat", type="primary", use_container_width=True):
             create_new_chat()
             st.rerun()
 
-        # Saved chats with search
-        st.markdown('<div class="side-label">Saved chats</div>', unsafe_allow_html=True)
-        search_q = st.text_input(
-            "Search chats", placeholder="🔍  Search…",
-            label_visibility="collapsed", key="chat_search_input",
+        # Active page indicator
+        active_item = next((item for item in NAV_ITEMS if item[0] == st.session_state.page), NAV_ITEMS[0])
+        st.markdown(
+            f"""
+            <div class="sb-label">Current workspace</div>
+            <div class="sb-active">
+              <div class="sb-active-icon">{active_item[2]}</div>
+              <div class="sb-active-text">
+                <div class="sb-active-name">{active_item[1]}</div>
+                <div class="sb-active-desc">{active_item[3]}</div>
+              </div>
+              <div class="sb-dot"></div>
+            </div>
+            """,
+            unsafe_allow_html=True,
         )
-        st.session_state.chat_search = search_q.lower().strip()
 
-        for chat in st.session_state.chat_sessions:
-            if (st.session_state.chat_search
-                    and st.session_state.chat_search not in chat["title"].lower()):
-                continue
-            label      = chat["title"] if chat["title"] != "New Chat" else "💬 New Chat"
-            is_current = chat["id"] == st.session_state.current_chat_id
-            btn_label  = f"→ {label}" if is_current else f"   {label}"
-            if st.button(btn_label, key=f"chat_sel_{chat['id']}", use_container_width=True):
+        st.markdown('<div class="sb-label">Saved chats</div>', unsafe_allow_html=True)
+        for chat in st.session_state.chat_sessions[:8]:
+            label = "💬  " + chat["title"]
+            if st.button(label, key=f"select_{chat['id']}", use_container_width=True):
                 st.session_state.current_chat_id = chat["id"]
                 st.session_state.page = "Chat"
                 st.rerun()
 
-        if st.button("🗑  Delete current chat", key="del_chat_btn", use_container_width=True):
+        if st.button("✕  Delete current chat", key="del_chat", use_container_width=True):
             delete_current_chat()
             st.rerun()
 
-        # Navigation
-        st.markdown('<div class="side-label">Navigation</div>', unsafe_allow_html=True)
-        for page_key, label, icon, sub in NAV_ITEMS:
-            if st.button(f"{icon}  {label}", key=f"nav_{page_key}", use_container_width=True):
-                st.session_state.page = page_key
-                st.rerun()
-
-        # Theme toggle
-        st.markdown('<div class="side-label">Appearance</div>', unsafe_allow_html=True)
-        theme = st.radio(
-            "Theme", ["Dark", "Light"],
-            index=0 if st.session_state.get("theme_mode", "Dark") == "Dark" else 1,
-            horizontal=True, label_visibility="collapsed",
-        )
-        if theme != st.session_state.get("theme_mode", "Dark"):
-            st.session_state.theme_mode = theme
-            st.rerun()
-
-        # DB schema expander
-        st.markdown('<div class="side-label">Database</div>', unsafe_allow_html=True)
-        with st.expander("📂 Tables"):
-            try:
-                for t in list_tables():
-                    ncols = len(table_columns(t))
-                    st.markdown(f"**{t}** — {ncols} cols")
-            except Exception:
-                st.caption("Could not load schema.")
-
-
-# ─────────────────────────────────────────────────────────────
-#  PAGE: CHAT
-# ─────────────────────────────────────────────────────────────
-def page_chat():
-    hero(
-        "Customer 360 Chat",
-        "Ask direct business questions. Your chat sessions are saved during this browser session.",
-        eyebrow="💬 AI Chat",
-    )
-
-    # Quick prompts
-    st.markdown("""
-<div class="section-title">
-  <h3>Quick prompts</h3>
-  <span>Start with a common telecom question</span>
-</div>""", unsafe_allow_html=True)
-
-    cols = st.columns(4)
-    for i, q in enumerate(SUGGESTED_QUESTIONS[:4]):
-        with cols[i]:
-            st.markdown(
-                f'<div class="prompt-card">'
-                f'<div class="prompt-number">{i+1}</div>'
-                f'<p>{q}</p>'
-                f'</div>',
-                unsafe_allow_html=True,
-            )
-            if st.button("Ask →", key=f"qprompt_{i}", use_container_width=True):
-                st.session_state.pending_prompt = q
-                st.rerun()
-
-    st.divider()
-
-    # Chat session header
-    chat = current_chat()
-    c_exp, c_title = st.columns([1, 6])
-    with c_exp:
-        st.download_button(
-            "⬇ Export chat",
-            data=chat_to_markdown(chat).encode("utf-8"),
-            file_name=f"{chat['title'][:30]}.md",
-            mime="text/markdown",
-            use_container_width=True,
-        )
-    with c_title:
-        st.markdown(
-            f"<div style='padding:.55rem 0;font-size:.82rem;color:var(--muted)'>"
-            f"Session started {chat.get('created_at', '')}</div>",
-            unsafe_allow_html=True,
-        )
-
-    # Message history
-    for msg in chat["messages"]:
-        with st.chat_message(msg["role"]):
-            if msg["role"] == "assistant" and msg.get("source"):
-                source_badge(msg["source"])
-            st.markdown(msg["content"])
-            if msg.get("sql"):
-                with st.expander("🔍 View SQL"):
-                    st.code(msg["sql"], language="sql")
-            if msg.get("ts"):
-                align = "right" if msg["role"] == "user" else "bot"
-                msg_timestamp(msg["ts"], align)
-
-    if len(chat["messages"]) > 4:
-        st.markdown('<div class="scroll-hint">▼</div>', unsafe_allow_html=True)
-
-    # Pending prompt (from quick-prompt buttons)
-    if st.session_state.pending_prompt:
-        prompt = st.session_state.pending_prompt
-        st.session_state.pending_prompt = ""
-        ask_and_store(prompt)
-        st.rerun()
-
-    # Chat input
-    if prompt := st.chat_input(
-        "Ask about churn, customers, revenue, billing, campaigns, complaints, or network impact…"
-    ):
-        ask_and_store(prompt)
-        st.rerun()
-
-
-# ─────────────────────────────────────────────────────────────
-#  PAGE: ANALYTICS
-# ─────────────────────────────────────────────────────────────
-def page_analytics():
-    hero(
-        "Dynamic Analytics",
-        "Adjust date ranges, customer segments, risk levels, cities, services, and chart styles. "
-        "Export the filtered dataset when needed.",
-        eyebrow="📊 Interactive BI",
-    )
-
-    opts   = filter_options()
-    months = opts.get("months", [])
-    if not months:
-        st.warning("No monthly summary data found.")
-        return
-
-    # Filters
-    shell_start()
-    fc1, fc2, fc3, fc4, fc5 = st.columns([2, 2, 2, 2, 2])
-    with fc1:
-        idx = st.select_slider(
-            "Month range", options=months,
-            value=(months[0], months[-1]),
-        )
-        month_start, month_end = idx
-    with fc2:
-        cities = st.multiselect("Cities", opts["cities"], placeholder="All cities")
-    with fc3:
-        segments = st.multiselect("Customer segments", opts["segments"], placeholder="All segments")
-    with fc4:
-        risk_levels = st.multiselect("Risk levels", opts["risk_levels"], placeholder="All levels")
-    with fc5:
-        service_types = st.multiselect("Service types", opts["service_types"], placeholder="All services")
-
-    qc1, qc2, qc3, qc4 = st.columns(4)
-    with qc1:
-        if st.button("⚡ High-risk only", use_container_width=True):
-            risk_levels = ["High"]
-    with qc2:
-        if st.button("👑 VIP customers", use_container_width=True):
-            segments = ["VIP"]
-    with qc3:
-        if st.button("🏙 Amman view", use_container_width=True):
-            cities = ["Amman"]
-    with qc4:
-        if st.button("↺ Reset all", use_container_width=True):
-            cities = []; segments = []; risk_levels = []; service_types = []
-    shell_end()
-
-    # KPIs
-    with st.spinner("Loading analytics…"):
-        try:
-            data = build_filtered_analytics(
-                month_start, month_end, cities, segments, risk_levels, service_types
-            )
-        except Exception as e:
-            st.error(f"Could not load analytics: {e}")
-            return
-
-    kpi = data["kpi"].iloc[0] if not data["kpi"].empty else {}
-    k1, k2, k3, k4, k5, k6 = st.columns(6)
-    with k1:
-        kpi_card("Customers",  format_num(kpi.get("customers", 0)),
-                 "Distinct filtered customers", badge_text="Live", badge_type="good")
-    with k2:
-        kpi_card("Revenue",    format_num(kpi.get("revenue", 0)) + " JOD",
-                 "Filtered monthly revenue", badge_text="↑ 4%", badge_type="good")
-    with k3:
-        kpi_card("Avg churn",  f"{float(kpi.get('avg_churn', 0)):.2f}",
-                 "Average churn score", badge_text="High", badge_type="warn")
-    with k4:
-        kpi_card("Avg data",   format_num(kpi.get("avg_data", 0)) + " GB",
-                 "Avg monthly usage", badge_text="Stable", badge_type="info")
-    with k5:
-        kpi_card("Complaints", format_num(kpi.get("complaints", 0)),
-                 "Within selected months", badge_text="↑ 12%", badge_type="danger")
-    with k6:
-        kpi_card("Support",    format_num(kpi.get("support", 0)),
-                 "Interaction count", badge_text="Normal", badge_type="gray")
-
-    # Chart style picker
-    _, cstyle_col = st.columns([5, 1])
-    with cstyle_col:
-        chart_style = st.selectbox(
-            "Chart style", list(CHART_TYPES.keys()), label_visibility="collapsed"
-        )
-    ct = CHART_TYPES.get(chart_style, "bar")
-
-    # Tabs
-    tab_rev, tab_risk, tab_seg, tab_city, tab_usage, tab_cust = st.tabs(
-        ["Revenue", "Risk", "Segments", "City", "Usage", "Customers"]
-    )
-    with tab_rev:
-        st.markdown('<div class="section-title"><h3>Revenue trend by month</h3></div>',
-                    unsafe_allow_html=True)
-        build_chart(data["revenue"], ct, "Revenue trend by month")
-        if not data["revenue"].empty:
-            st.download_button(
-                "⬇ Export revenue data",
-                data["revenue"].to_csv(index=False).encode(),
-                file_name="revenue.csv", mime="text/csv",
-            )
-    with tab_risk:
-        st.markdown('<div class="section-title"><h3>Churn risk distribution</h3></div>',
-                    unsafe_allow_html=True)
-        build_chart(data["risk"], "pie", "Risk level breakdown")
-    with tab_seg:
-        st.markdown('<div class="section-title"><h3>Revenue by customer segment</h3></div>',
-                    unsafe_allow_html=True)
-        build_chart(data["seg"], ct, "Revenue by segment")
-    with tab_city:
-        st.markdown('<div class="section-title"><h3>Customers by city (top 12)</h3></div>',
-                    unsafe_allow_html=True)
-        build_chart(data["city"], "horizontal_bar", "Customers by city")
-    with tab_usage:
-        st.markdown('<div class="section-title"><h3>Average data usage trend</h3></div>',
-                    unsafe_allow_html=True)
-        build_chart(data["usage"], "line", "Avg data usage by month")
-    with tab_cust:
-        st.markdown('<div class="section-title"><h3>Customer count by segment</h3></div>',
-                    unsafe_allow_html=True)
-        build_chart(data["cust"], "doughnut", "Customers by segment")
-
-
-# ─────────────────────────────────────────────────────────────
-#  PAGE: CHART BUILDER
-# ─────────────────────────────────────────────────────────────
-def page_chart_builder():
-    hero(
-        "Chart Builder",
-        "Describe the chart you want in business language. "
-        "The app plans a safe read-only query and turns the result into a visual.",
-        eyebrow="📈 Natural-language visuals",
-    )
-
-    shell_start()
-    question = st.text_area(
-        "Chart inquiry",
-        placeholder="e.g. Show monthly churn rate by city for the last 6 months",
-        height=110, key="chart_question",
-    )
-    c1, c2 = st.columns([2, 5])
-    with c1:
-        chart_type_label = st.selectbox(
-            "Chart type", list(CHART_TYPES.keys()), key="chart_type_sel"
-        )
-    with c2:
-        tip_card(
-            "Ask for one clear metric at a time — e.g. conversion by campaign, "
-            "churn by city, or complaints by category."
-        )
-    submitted = st.button("🎨  Create Chart", type="primary")
-    shell_end()
-
-    if submitted and question.strip():
-        with st.spinner("Building chart…"):
-            try:
-                chart = build_chart_from_question(
-                    question.strip(),
-                    chart_type=CHART_TYPES.get(chart_type_label, "bar"),
-                )
-                st.session_state.last_chart = chart
-            except Exception as exc:
-                st.error(f"Chart generation failed: {exc}")
-                st.session_state.last_chart = None
-    elif submitted:
-        st.warning("Please enter a chart description.")
-
-    if st.session_state.get("last_chart"):
-        render_chart(st.session_state.last_chart)
-    else:
-        empty_state(
-            "📊", "No chart yet",
-            "Describe a chart above and click Create Chart to generate a visual.",
-        )
-
-
-# ─────────────────────────────────────────────────────────────
-#  PAGE: SQL WORKSPACE
-# ─────────────────────────────────────────────────────────────
-def page_sql():
-    hero(
-        "SQL Workspace",
-        "Run safe read-only SELECT queries directly against the customer database. "
-        "Results export as CSV.",
-        eyebrow="🧮 SQL Workspace",
-    )
-
-    with st.expander("📂 Schema reference"):
-        try:
-            tables = list_tables()
-            tcols  = st.columns(min(len(tables), 4))
-            for i, t in enumerate(tables):
-                with tcols[i % 4]:
-                    cols_df = table_columns(t)
-                    st.markdown(f"**{t}**")
-                    for _, row in cols_df.iterrows():
-                        st.markdown(
-                            f"<span style='font-size:.77rem;color:var(--muted)'>"
-                            f"{row['name']} ({row['type']})</span>",
-                            unsafe_allow_html=True,
-                        )
-        except Exception:
-            st.caption("Schema unavailable.")
-
-    shell_start()
-    render_sql_runner(
-        default_sql=(
-            "SELECT c.customer_id, c.name, c.city,\n"
-            "       cs.churn_score, cs.risk_level\n"
-            "FROM customers c\n"
-            "JOIN customer_churn_scores cs ON c.customer_id = cs.customer_id\n"
-            "ORDER BY cs.churn_score DESC\n"
-            "LIMIT 10;"
-        )
-    )
-    shell_end()
-
-
-# ─────────────────────────────────────────────────────────────
-#  PAGE: PROMPT LIBRARY
-# ─────────────────────────────────────────────────────────────
-def page_suggested():
-    hero(
-        "Prompt Library",
-        "Ready-made business questions for telecom analytics. "
-        "Click any card to send it directly to AI Chat.",
-        eyebrow="✨ Prompt Library",
-    )
-    cols = st.columns(2)
-    for i, q in enumerate(SUGGESTED_QUESTIONS):
-        with cols[i % 2]:
-            st.markdown(
-                f'<div class="prompt-card">'
-                f'<div class="prompt-number">{i+1}</div>'
-                f'<p>{q}</p>'
-                f'</div>',
-                unsafe_allow_html=True,
-            )
-            if st.button("Send to chat →", key=f"sugg_{i}", use_container_width=True):
-                st.session_state.pending_prompt = q
-                st.session_state.page = "Chat"
+        st.markdown('<div class="sb-label">Navigation</div>', unsafe_allow_html=True)
+        for page, title, icon, _desc in NAV_ITEMS:
+            if st.button(f"{icon}  {title}", key=f"nav_{page}", use_container_width=True):
+                st.session_state.page = page
                 st.rerun()
 
 
-# ─────────────────────────────────────────────────────────────
-#  MAIN
-# ─────────────────────────────────────────────────────────────
+# ─────────────────────────── MAIN ────────────────────────────
+
 def main():
     ensure_state()
     inject_css()
@@ -1520,17 +1715,17 @@ def main():
 
     page = st.session_state.page
     if page == "Chat":
-        page_chat()
+        show_chat()
     elif page == "Analytics":
-        page_analytics()
+        show_dynamic_analytics()
     elif page == "Chart Builder":
-        page_chart_builder()
+        show_chart_builder()
     elif page == "SQL Query Builder":
-        page_sql()
+        show_sql_workspace()
     elif page == "Suggested Questions":
-        page_suggested()
+        show_suggested_questions()
     else:
-        page_chat()
+        show_chat()
 
 
 if __name__ == "__main__":
