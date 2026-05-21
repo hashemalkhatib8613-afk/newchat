@@ -1,4 +1,5 @@
 import base64
+import importlib
 import os
 import sqlite3
 import time
@@ -36,12 +37,13 @@ def load_streamlit_secret():
 
 load_streamlit_secret()
 
-from class3_sql_agent_backend import (  # noqa: E402
-    ask_sql_agent_payload,
-    build_chart_from_question,
-    execute_sql_query,
-    get_database_overview,
-)
+import class3_sql_agent_backend as backend  # noqa: E402
+
+backend = importlib.reload(backend)
+ask_sql_agent_payload = backend.ask_sql_agent_payload
+build_chart_from_question = backend.build_chart_from_question
+execute_sql_query = backend.execute_sql_query
+get_database_overview = backend.get_database_overview
 
 
 st.set_page_config(
