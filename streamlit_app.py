@@ -688,7 +688,26 @@ def inject_css():
         .stSpinner > div { border-top-color: var(--brand) !important; }
 
         /* ─────────── HIDE CHROME ─────────── */
-        footer, #MainMenu, [data-testid="stToolbar"] { visibility: hidden; }
+        footer, #MainMenu { visibility: hidden; }
+        [data-testid="stToolbar"] {
+          visibility: visible !important;
+          right: .5rem !important;
+        }
+        [data-testid="collapsedControl"] {
+          visibility: visible !important;
+          display: flex !important;
+          opacity: 1 !important;
+          z-index: 999999 !important;
+        }
+        [data-testid="collapsedControl"] button,
+        [data-testid="stSidebarCollapseButton"] {
+          visibility: visible !important;
+          opacity: 1 !important;
+          background: var(--s2) !important;
+          border: 1px solid rgba(255,255,255,.12) !important;
+          border-radius: var(--r) !important;
+          color: var(--txt) !important;
+        }
 
         /* ─────────── SCROLLBAR ─────────── */
         ::-webkit-scrollbar { width: 4px; height: 4px; }
