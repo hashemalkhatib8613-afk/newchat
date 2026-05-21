@@ -46,7 +46,7 @@ from class3_sql_agent_backend import (  # noqa: E402
 
 st.set_page_config(
     page_title="Zain Customer 360 Copilot",
-    page_icon=str(LOGO_PATH) if LOGO_PATH.exists() else "âڑ،",
+    page_icon=str(LOGO_PATH) if LOGO_PATH.exists() else "\U0001f4ca",
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -75,11 +75,11 @@ SUGGESTED_QUESTIONS = [
 ]
 
 NAV_ITEMS = [
-    ("Chat", "AI Chat", "ًں’¬", "Ask business questions"),
-    ("Analytics", "Dynamic Analytics", "ًں“ٹ", "Filter KPIs and charts"),
-    ("Chart Builder", "Chart Builder", "ًں“ˆ", "Create custom visuals"),
-    ("SQL Query Builder", "SQL Workspace", "ًں§®", "Run safe SELECT queries"),
-    ("Suggested Questions", "Prompt Library", "âœ¨", "Ready-made use cases"),
+    ("Chat", "AI Chat", "\U0001f4ac", "Ask business questions"),
+    ("Analytics", "Dynamic Analytics", "\U0001f4ca", "Filter KPIs and charts"),
+    ("Chart Builder", "Chart Builder", "\U0001f4c8", "Create custom visuals"),
+    ("SQL Query Builder", "SQL Workspace", "\U0001f9ee", "Run safe SELECT queries"),
+    ("Suggested Questions", "Prompt Library", "\u2728", "Ready-made use cases"),
 ]
 
 
@@ -1331,11 +1331,11 @@ def show_customer_insights():
         return
 
     labels = [
-        f"{row.customer_id} آ· {row.full_name} آ· {row.city} آ· {row.customer_segment}"
+        f"{row.customer_id} ط·آ¢ط¢آ· {row.full_name} ط·آ¢ط¢آ· {row.city} ط·آ¢ط¢آ· {row.customer_segment}"
         for row in candidates.itertuples()
     ]
     selected_label = st.selectbox("Select customer", labels)
-    customer_id = int(selected_label.split(" آ· ")[0])
+    customer_id = int(selected_label.split(" ط·آ¢ط¢آ· ")[0])
 
     customer = query_df(
         """
@@ -1654,13 +1654,13 @@ def render_sidebar():
             unsafe_allow_html=True,
         )
 
-        if st.button("ï¼‹ New Chat", type="primary", use_container_width=True):
+        if st.button("+ New Chat", type="primary", use_container_width=True):
             create_new_chat()
             st.rerun()
 
         st.markdown('<div class="side-label">Saved chats</div>', unsafe_allow_html=True)
         for chat in st.session_state.chat_sessions[:8]:
-            label = "ًں’¬ " + chat["title"]
+            label = "\U0001f4ac " + chat["title"]
             if st.button(label, key=f"select_{chat['id']}", use_container_width=True):
                 st.session_state.current_chat_id = chat["id"]
                 st.session_state.page = "Chat"
@@ -1699,3 +1699,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
