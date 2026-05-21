@@ -1,7 +1,9 @@
 import base64
 import importlib
+import hashlib
 import os
 import sqlite3
+import tempfile
 import time
 from datetime import datetime
 from pathlib import Path
@@ -9,6 +11,12 @@ from pathlib import Path
 import pandas as pd
 import plotly.express as px
 import streamlit as st
+from openai import OpenAI
+
+try:
+    from streamlit_mic_recorder import mic_recorder
+except ImportError:
+    mic_recorder = None
 
 APP_DIR = Path(__file__).resolve().parent
 LOGO_PATH = APP_DIR / "zain-logo.png"
@@ -106,6 +114,10 @@ def ensure_state():
         st.session_state.last_chart = None
     if "pending_prompt" not in st.session_state:
         st.session_state.pending_prompt = ""
+    if "processed_voice_hash" not in st.session_state:
+        st.session_state.processed_voice_hash = ""
+    if "last_voice_transcript" not in st.session_state:
+        st.session_state.last_voice_transcript = ""
     st.session_state.plot_template = "plotly_dark"
 
 
@@ -852,6 +864,83 @@ def call_chat_backend(prompt, chat_history):
         return ask_sql_agent_payload(prompt)
 
 
+def extract_audio_bytes(audio):
+    if not audio:
+        return b""
+    if isinstance(audio, bytes):
+        return audio
+    if isinstance(audio, dict):
+        for key in ("bytes", "audio", "data"):
+            value = audio.get(key)
+            if isinstance(value, bytes):
+                return value
+            if isinstance(value, bytearray):
+                return bytes(value)
+    return b""
+
+
+def transcribe_voice(audio_bytes):
+    if not audio_bytes:
+        return ""
+    if not os.environ.get("OPENAI_API_KEY"):
+        raise RuntimeError("OPENAI_API_KEY is not configured.")
+
+    client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as audio_file:
+        audio_file.write(audio_bytes)
+        audio_path = audio_file.name
+
+    try:
+        with open(audio_path, "rb") as audio_file:
+            transcript = client.audio.transcriptions.create(
+                model="whisper-1",
+                file=audio_file,
+            )
+        return str(getattr(transcript, "text", "") or "").strip()
+    finally:
+        try:
+            os.remove(audio_path)
+        except OSError:
+            pass
+
+
+def render_voice_input():
+    st.markdown("##### Voice input")
+    if mic_recorder is None:
+        st.info("Voice recording is not installed yet. Install dependencies from requirements.txt, then restart Streamlit.")
+        return
+
+    audio = mic_recorder(
+        start_prompt="Start recording",
+        stop_prompt="Stop recording",
+        just_once=False,
+        format="wav",
+        use_container_width=True,
+        key="voice_recorder",
+    )
+    audio_bytes = extract_audio_bytes(audio)
+    if not audio_bytes:
+        if st.session_state.last_voice_transcript:
+            st.caption(f"Last transcript: {st.session_state.last_voice_transcript}")
+        return
+
+    voice_hash = hashlib.sha256(audio_bytes).hexdigest()
+    if voice_hash == st.session_state.processed_voice_hash:
+        return
+
+    with st.spinner("Transcribing voice..."):
+        transcript = transcribe_voice(audio_bytes)
+
+    st.session_state.processed_voice_hash = voice_hash
+    st.session_state.last_voice_transcript = transcript
+    if transcript:
+        st.success(f"Voice transcript: {transcript}")
+        st.session_state.pending_prompt = transcript
+        st.rerun()
+    else:
+        st.warning("I could not detect speech in that recording. Please try again.")
+
+
 def ask_and_store(prompt):
     prompt = str(prompt).strip()
     if not prompt:
@@ -862,7 +951,7 @@ def ask_and_store(prompt):
     chat_history = build_chat_history_context(chat)
     chat["messages"].append({"role": "user", "content": prompt, "sql": ""})
     try:
-        with st.spinner(""):
+        with st.spinner("Analyzing the database…"):
             payload = call_chat_backend(prompt, chat_history)
         answer = payload.get("answer", "No answer was returned.")
         sql = payload.get("sql", "")
@@ -1004,6 +1093,8 @@ def show_chat():
             if message.get("sql"):
                 with st.expander("View generated SQL"):
                     st.code(message["sql"], language="sql")
+
+    render_voice_input()
 
     if st.session_state.pending_prompt:
         pending = st.session_state.pending_prompt
