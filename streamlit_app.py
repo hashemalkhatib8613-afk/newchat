@@ -997,7 +997,7 @@ def render_chat_composer():
         st.session_state.chat_composer_text = ""
         st.session_state.clear_chat_composer = False
 
-    st.markdown('<div class="chat-composer-shell">', unsafe_allow_html=True)
+    st.markdown('', unsafe_allow_html=True)
     text_col, mic_col, send_col = st.columns([10, 1, 1])
     with text_col:
         prompt = st.text_input(
