@@ -198,6 +198,36 @@ def retrieve_rag_answer(question):
     }
 
 
+def combine_agent_payloads(sql_payload, rag_payload):
+    sql_answer = str(sql_payload.get("answer", "")).strip()
+    rag_answer = str(rag_payload.get("answer", "")).strip()
+    matched_question = rag_payload.get("matched_question", "")
+    match_score = rag_payload.get("match_score", "")
+
+    if _normalize_question(sql_answer) == _normalize_question(rag_answer):
+        answer = sql_answer
+    else:
+        memory_note = ""
+        if matched_question:
+            memory_note = f"\n\nMemory Context\nMatched prior question: {matched_question}"
+            if match_score != "":
+                memory_note += f" (similarity {match_score})"
+        answer = (
+            f"{sql_answer}\n\n"
+            "Related Memory Answer\n"
+            f"{rag_answer}"
+            f"{memory_note}"
+        ).strip()
+
+    return {
+        "answer": answer,
+        "sql": sql_payload.get("sql", ""),
+        "source": "SQL Agent + RAG Agent",
+        "matched_question": matched_question,
+        "match_score": match_score,
+    }
+
+
 def save_qa_to_memory(question, answer, sql="", source="SQL Agent"):
     question = str(question).strip()
     answer = str(answer).strip()
@@ -863,23 +893,7 @@ Rules:
     return validate_read_only_sql(sql) if sql else ""
 
 
-def ask_sql_agent_payload(question):
-    direct_payload = answer_direct_query(question)
-    if direct_payload:
-        direct_payload["source"] = "SQL Agent"
-        save_qa_to_memory(
-            question,
-            direct_payload.get("answer", ""),
-            direct_payload.get("sql", ""),
-            direct_payload["source"],
-        )
-        return direct_payload
-
-    rag_payload = retrieve_rag_answer(question)
-    if rag_payload:
-        save_qa_to_memory(question, rag_payload.get("answer", ""), "", rag_payload["source"])
-        return rag_payload
-
+def _ask_live_sql_agent_payload(question):
     global _SQL_AGENT
     if _SQL_AGENT is None:
         _SQL_AGENT = create_sql_agent()
@@ -890,8 +904,37 @@ def ask_sql_agent_payload(question):
         sql = plan_sql_for_question(question)
     except Exception:
         sql = ""
-    payload = {"answer": answer, "sql": sql, "source": "SQL Agent"}
-    save_qa_to_memory(question, answer, sql, payload["source"])
+    return {"answer": answer, "sql": sql, "source": "SQL Agent"}
+
+
+def ask_sql_agent_payload(question):
+    direct_payload = answer_direct_query(question)
+    rag_payload = retrieve_rag_answer(question)
+
+    if direct_payload:
+        direct_payload["source"] = "SQL Agent"
+        payload = combine_agent_payloads(direct_payload, rag_payload) if rag_payload else direct_payload
+        save_qa_to_memory(
+            question,
+            payload.get("answer", ""),
+            payload.get("sql", ""),
+            payload["source"],
+        )
+        return payload
+
+    if rag_payload:
+        try:
+            sql_payload = _ask_live_sql_agent_payload(question)
+        except Exception:
+            save_qa_to_memory(question, rag_payload.get("answer", ""), "", rag_payload["source"])
+            return rag_payload
+
+        payload = combine_agent_payloads(sql_payload, rag_payload)
+        save_qa_to_memory(question, payload.get("answer", ""), payload.get("sql", ""), payload["source"])
+        return payload
+
+    payload = _ask_live_sql_agent_payload(question)
+    save_qa_to_memory(question, payload.get("answer", ""), payload.get("sql", ""), payload["source"])
     return payload
 
 
