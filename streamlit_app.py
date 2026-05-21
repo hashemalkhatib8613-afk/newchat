@@ -1167,9 +1167,7 @@ def show_chat():
                 score = message.get("match_score", "")
                 score_text = f"  ·  Similarity: {score}" if score != "" else ""
                 st.caption(f"Memory match: {message['matched_question']}{score_text}")
-            if message.get("sql"):
-                with st.expander("View generated SQL"):
-                    st.code(message["sql"], language="sql")
+      
 
 
     if st.session_state.pending_prompt:
