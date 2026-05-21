@@ -864,11 +864,6 @@ Rules:
 
 
 def ask_sql_agent_payload(question):
-    rag_payload = retrieve_rag_answer(question)
-    if rag_payload:
-        save_qa_to_memory(question, rag_payload.get("answer", ""), "", rag_payload["source"])
-        return rag_payload
-
     direct_payload = answer_direct_query(question)
     if direct_payload:
         direct_payload["source"] = "SQL Agent"
@@ -879,6 +874,11 @@ def ask_sql_agent_payload(question):
             direct_payload["source"],
         )
         return direct_payload
+
+    rag_payload = retrieve_rag_answer(question)
+    if rag_payload:
+        save_qa_to_memory(question, rag_payload.get("answer", ""), "", rag_payload["source"])
+        return rag_payload
 
     global _SQL_AGENT
     if _SQL_AGENT is None:
