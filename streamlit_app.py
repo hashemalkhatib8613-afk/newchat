@@ -1,4 +1,3 @@
-
 import base64
 import importlib
 import os
@@ -42,9 +41,10 @@ build_chart_from_question = backend.build_chart_from_question
 execute_sql_query     = backend.execute_sql_query
 get_database_overview = backend.get_database_overview
 
+_icon = str(LOGO_PATH) if LOGO_PATH.exists() else "🅩"
 st.set_page_config(
     page_title="Zain Customer 360 Copilot",
-    page_icon=str(LOGO_PATH) if LOGO_PATH.exists() else "📊",
+    page_icon=_icon,
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -325,6 +325,12 @@ section[data-testid="stSidebar"] > div{{padding:1rem .85rem 1.5rem}}
   background:linear-gradient(135deg,rgba(215,25,32,.22),rgba(255,255,255,.04)),rgba(255,255,255,.05);
   box-shadow:0 0 0 4px rgba(215,25,32,.07);margin:.2rem 0 .9rem;
 }}
+.brand-card-inner{{display:flex;align-items:center;gap:10px;margin-bottom:.55rem}}
+.brand-logo-img{{
+  width:42px;height:42px;border-radius:12px;
+  object-fit:cover;flex-shrink:0;
+  box-shadow:0 4px 14px rgba(0,0,0,.35),0 0 0 2px rgba(255,255,255,.12);
+}}
 .brand-title{{font-size:.98rem;font-weight:900;letter-spacing:-.025em;margin-bottom:.4rem}}
 .brand-copy{{font-size:.74rem;line-height:1.55;color:rgba(240,242,248,.60)}}
 .chip-row{{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.85rem}}
@@ -362,12 +368,16 @@ section[data-testid="stSidebar"] > div{{padding:1rem .85rem 1.5rem}}
   content:"";position:absolute;right:1.4rem;top:50%;
   width:clamp(76px,10vw,130px);height:clamp(76px,10vw,130px);
   transform:translateY(-50%);border-radius:var(--r24);
-  background:rgba(255,255,255,.04);border:1px solid var(--bdr);
+  background:transparent;border:none;
 }}
 .hero-logo{{
-  position:absolute;right:2.2rem;top:50%;
-  width:clamp(55px,7vw,92px);transform:translateY(-50%);
-  opacity:.62;z-index:1;pointer-events:none;
+  position:absolute;right:1.6rem;top:50%;
+  width:clamp(64px,8vw,108px);height:clamp(64px,8vw,108px);
+  transform:translateY(-50%);
+  border-radius:28px;
+  object-fit:cover;
+  box-shadow:0 8px 32px rgba(0,0,0,.35),0 0 0 3px rgba(255,255,255,.10);
+  z-index:1;pointer-events:none;
 }}
 .hero-eyebrow{{
   display:inline-flex;align-items:center;gap:.45rem;
@@ -984,10 +994,14 @@ def build_filtered_analytics(month_start, month_end, cities, segments, risk_leve
 def render_sidebar():
     ensure_state()
     with st.sidebar:
-        # Brand card
-        st.markdown("""
+        # Brand card with logo
+        logo_img = f'<img class="brand-logo-img" src="{LOGO_DATA_URI}" alt="Z">' if LOGO_DATA_URI else '<div class="brand-logo-img" style="background:rgba(215,25,32,.3);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:1.2rem;color:#fff">Z</div>'
+        st.markdown(f"""
 <div class="brand-card">
-  <div class="brand-title">Customer 360 AI Copilot</div>
+  <div class="brand-card-inner">
+    {logo_img}
+    <div class="brand-title">Customer 360 AI Copilot</div>
+  </div>
   <div class="brand-copy">Premium analytics workspace for customers, churn, revenue, complaints, support, campaigns, and network signals.</div>
   <div class="chip-row">
     <span class="chip">SQL-backed</span>
