@@ -89,7 +89,6 @@ NAV_ITEMS = [
     ("SQL Query Builder",  "SQL Workspace",     "🧮", "Run safe SELECT queries"),
     ("Suggested Questions","Prompt Library",    "✨", "Ready-made use cases"),
     ("Customer Insights",  "Customer 360",      "👤", "Single customer view"),
-    ("Data Catalog",       "Data Catalog",      "🗄", "Schema explorer"),
 ]
 
 
@@ -723,249 +722,33 @@ def inject_css():
         /* ─────────── DIVIDER ─────────── */
         hr { border-color: rgba(255,255,255,.07) !important; margin: .65rem 0 !important; }
 
-        /* ─────────── PREMIUM CHAT COMPOSER + VOICE INPUT ─────────── */
-
+        /* Chat composer with inline mic and send buttons */
         .chat-composer-shell {
-          position: sticky;
-          bottom: 1rem;
-          z-index: 50;
-          margin-top: 1rem;
-          padding: .7rem;
-          border: 1px solid rgba(255,255,255,.10);
-          border-radius: 22px;
-          background:
-            radial-gradient(circle at 8% 0%, rgba(99,206,248,.18), transparent 34%),
-            radial-gradient(circle at 100% 100%, rgba(140,58,175,.16), transparent 35%),
-            linear-gradient(135deg, rgba(17,20,33,.96), rgba(12,14,23,.98));
-          box-shadow:
-            0 18px 55px rgba(0,0,0,.42),
-            inset 0 1px 0 rgba(255,255,255,.055);
-          backdrop-filter: blur(18px);
+          margin-top: .75rem;
+          padding: .55rem;
+          border: 1px solid rgba(255,255,255,.08);
+          border-radius: var(--rl);
+          background: var(--s1);
         }
-
         .chat-composer-shell div[data-testid="stForm"] {
           border: none !important;
         }
-
         .chat-composer-shell div[data-baseweb="input"] > div {
-          min-height: 48px !important;
-          border: 1px solid rgba(255,255,255,.09) !important;
-          background: rgba(255,255,255,.04) !important;
+          min-height: 38px !important;
+          border: none !important;
+          background: transparent !important;
           box-shadow: none !important;
-          border-radius: 17px !important;
-          transition:
-            border-color .16s ease,
-            background .16s ease,
-            box-shadow .16s ease,
-            transform .12s ease;
         }
-
-        .chat-composer-shell div[data-baseweb="input"] > div:focus-within {
-          border-color: rgba(99,206,248,.48) !important;
-          background: rgba(255,255,255,.06) !important;
-          box-shadow:
-            0 0 0 3px rgba(99,206,248,.10),
-            0 10px 28px rgba(0,0,0,.22) !important;
-        }
-
         .chat-composer-shell input {
-          font-size: .9rem !important;
-          font-weight: 500 !important;
-          color: var(--txt) !important;
-          padding-left: .45rem !important;
+          font-size: .86rem !important;
         }
-
-        .chat-composer-shell input::placeholder {
-          color: rgba(133,145,171,.72) !important;
-        }
-
-        /* Compact voice label */
-        .voice-compact-wrap {
-          height: 0;
-          position: relative;
-        }
-
-        .voice-compact-hint {
-          position: absolute;
-          top: -17px;
-          left: 50%;
-          transform: translateX(-50%);
-          font-size: .55rem;
-          font-weight: 800;
-          letter-spacing: .12em;
-          text-transform: uppercase;
-          color: rgba(139,223,255,.74) !important;
-          pointer-events: none;
-          white-space: nowrap;
-        }
-
-        /* Voice recorder component frame */
-        .chat-composer-shell iframe,
-        .chat-composer-shell [data-testid="stIFrame"] {
-          border-radius: 17px !important;
-          overflow: hidden !important;
-        }
-
-        /* Composer buttons */
         .chat-composer-shell .stButton > button,
         .chat-composer-shell div[data-testid="stFormSubmitButton"] > button {
-          min-height: 48px !important;
-          height: 48px !important;
-          border-radius: 17px !important;
+          min-height: 38px !important;
+          height: 38px !important;
           justify-content: center !important;
           text-align: center !important;
           padding: 0 !important;
-          font-size: 1.08rem !important;
-          font-weight: 800 !important;
-          border: 1px solid rgba(255,255,255,.13) !important;
-          background:
-            linear-gradient(135deg, rgba(99,206,248,.95), rgba(140,58,175,.95)) !important;
-          color: #fff !important;
-          box-shadow:
-            0 10px 24px rgba(99,206,248,.13),
-            inset 0 1px 0 rgba(255,255,255,.16) !important;
-          transition:
-            transform .13s ease,
-            border-color .13s ease,
-            box-shadow .13s ease,
-            background .13s ease !important;
-        }
-
-        .chat-composer-shell .stButton > button:hover,
-        .chat-composer-shell div[data-testid="stFormSubmitButton"] > button:hover {
-          transform: translateY(-1px) scale(1.025) !important;
-          border-color: rgba(99,206,248,.46) !important;
-          background:
-            linear-gradient(135deg, rgba(139,223,255,.98), rgba(110,102,216,.98)) !important;
-          box-shadow:
-            0 14px 32px rgba(99,206,248,.18),
-            0 0 0 3px rgba(99,206,248,.08),
-            inset 0 1px 0 rgba(255,255,255,.18) !important;
-        }
-
-        .chat-composer-shell .stButton > button:active,
-        .chat-composer-shell div[data-testid="stFormSubmitButton"] > button:active {
-          transform: translateY(0) scale(.98) !important;
-        }
-
-        /* Full voice input panel */
-        .voice-panel {
-          display: flex;
-          align-items: center;
-          gap: .85rem;
-          padding: 1rem 1.1rem;
-          margin-bottom: .8rem;
-          border-radius: 20px;
-          background:
-            radial-gradient(circle at 0% 0%, rgba(99,206,248,.16), transparent 38%),
-            linear-gradient(135deg, rgba(99,206,248,.10), rgba(140,58,175,.10)),
-            rgba(255,255,255,.035);
-          border: 1px solid rgba(255,255,255,.09);
-          box-shadow:
-            0 14px 36px rgba(0,0,0,.22),
-            inset 0 1px 0 rgba(255,255,255,.05);
-        }
-
-        .voice-panel-icon {
-          width: 42px;
-          height: 42px;
-          flex-shrink: 0;
-          border-radius: 15px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          background:
-            linear-gradient(135deg, rgba(99,206,248,.92), rgba(140,58,175,.92));
-          color: #fff !important;
-          font-size: 1.15rem;
-          box-shadow: 0 10px 24px rgba(99,206,248,.16);
-        }
-
-        .voice-panel-title {
-          font-size: .95rem;
-          font-weight: 800;
-          color: #fff !important;
-          margin-bottom: .18rem;
-        }
-
-        .voice-panel-subtitle {
-          font-size: .78rem;
-          color: var(--m1) !important;
-          line-height: 1.5;
-        }
-
-        .voice-transcript-preview {
-          margin-top: .8rem;
-          padding: .9rem 1rem;
-          border-radius: 17px;
-          background:
-            linear-gradient(135deg, rgba(99,206,248,.09), rgba(140,58,175,.07));
-          border: 1px solid rgba(99,206,248,.22);
-        }
-
-        .voice-transcript-preview span {
-          display: block;
-          margin-bottom: .38rem;
-          font-size: .62rem;
-          font-weight: 800;
-          letter-spacing: .12em;
-          text-transform: uppercase;
-          color: var(--brand) !important;
-        }
-
-        .voice-transcript-preview p {
-          margin: 0;
-          font-size: .86rem;
-          color: var(--txt) !important;
-          line-height: 1.55;
-        }
-
-        .voice-unavailable {
-          height: 48px;
-          border-radius: 17px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          background: rgba(255,255,255,.035);
-          border: 1px solid rgba(255,255,255,.08);
-          color: var(--m2) !important;
-          font-size: 1rem;
-        }
-
-        /* Mobile composer */
-        @media (max-width: 700px) {
-          .chat-composer-shell {
-            bottom: .65rem;
-            padding: .55rem;
-            border-radius: 19px;
-          }
-
-          .chat-composer-shell div[data-baseweb="input"] > div {
-            min-height: 45px !important;
-            border-radius: 15px !important;
-          }
-
-          .chat-composer-shell .stButton > button,
-          .chat-composer-shell div[data-testid="stFormSubmitButton"] > button {
-            min-height: 45px !important;
-            height: 45px !important;
-            border-radius: 15px !important;
-          }
-
-          .voice-compact-hint {
-            display: none;
-          }
-
-          .voice-panel {
-            align-items: flex-start;
-            padding: .9rem;
-          }
-
-          .voice-panel-icon {
-            width: 38px;
-            height: 38px;
-            border-radius: 13px;
-          }
         }
         </style>
         """,
@@ -1170,69 +953,26 @@ def transcribe_voice(audio_bytes):
 
 def render_voice_input(compact=False):
     if not compact:
-        st.markdown(
-            """
-            <div class="voice-panel">
-              <div class="voice-panel-icon">🎙️</div>
-              <div>
-                <div class="voice-panel-title">Voice Input</div>
-                <div class="voice-panel-subtitle">
-                  Record your question and the AI will convert it into text automatically.
-                </div>
-              </div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-
+        st.markdown("##### Voice input")
     if mic_recorder is None:
         if compact:
-            st.markdown(
-                """
-                <div class="voice-unavailable" title="Voice recording unavailable">
-                  🎙️
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
+            st.caption("Mic unavailable")
         else:
-            st.info(
-                "Voice recording is not installed yet. Install dependencies from requirements.txt, then restart Streamlit."
-            )
+            st.info("Voice recording is not installed yet. Install dependencies from requirements.txt, then restart Streamlit.")
         return
 
-    if compact:
-        st.markdown(
-            """
-            <div class="voice-compact-wrap">
-              <div class="voice-compact-hint">Voice</div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-
     audio = mic_recorder(
-        start_prompt="🎙️",
-        stop_prompt="■",
+        start_prompt="🎙" if compact else "Start recording",
+        stop_prompt="■" if compact else "Stop recording",
         just_once=False,
         format="wav",
         use_container_width=True,
         key="voice_recorder_compact" if compact else "voice_recorder",
     )
-
     audio_bytes = extract_audio_bytes(audio)
-
     if not audio_bytes:
         if not compact and st.session_state.last_voice_transcript:
-            st.markdown(
-                f"""
-                <div class="voice-transcript-preview">
-                  <span>Last transcript</span>
-                  <p>{st.session_state.last_voice_transcript}</p>
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
+            st.caption(f"Last transcript: {st.session_state.last_voice_transcript}")
         return
 
     voice_hash = hashlib.sha256(audio_bytes).hexdigest()
@@ -1244,17 +984,13 @@ def render_voice_input(compact=False):
 
     st.session_state.processed_voice_hash = voice_hash
     st.session_state.last_voice_transcript = transcript
-
     if transcript:
-        if compact:
-            st.toast("Voice converted to text")
-        else:
-            st.success(f"Voice transcript: {transcript}")
-
+        st.success(f"Voice transcript: {transcript}")
         st.session_state.pending_prompt = transcript
         st.rerun()
     else:
         st.warning("I could not detect speech in that recording. Please try again.")
+
 
 def render_chat_composer():
     if st.session_state.get("clear_chat_composer"):
@@ -1262,9 +998,7 @@ def render_chat_composer():
         st.session_state.clear_chat_composer = False
 
     st.markdown('<div class="chat-composer-shell">', unsafe_allow_html=True)
-
-    text_col, mic_col, send_col = st.columns([12, 1.25, 1.25])
-
+    text_col, mic_col, send_col = st.columns([10, 1, 1])
     with text_col:
         prompt = st.text_input(
             "Ask a question",
@@ -1272,24 +1006,17 @@ def render_chat_composer():
             label_visibility="collapsed",
             key="chat_composer_text",
         )
-
     with mic_col:
         render_voice_input(compact=True)
-
     with send_col:
-        submitted = st.button(
-            "↑",
-            use_container_width=True,
-            key="chat_composer_send",
-            help="Send message",
-        )
-
+        submitted = st.button("↑", use_container_width=True, key="chat_composer_send")
     st.markdown("</div>", unsafe_allow_html=True)
 
     if submitted and prompt:
         ask_and_store(prompt)
         st.session_state.clear_chat_composer = True
         st.rerun()
+
 
 def ask_and_store(prompt):
     prompt = str(prompt).strip()
