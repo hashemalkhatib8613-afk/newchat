@@ -18,6 +18,30 @@ QA_MEMORY_PATH = BASE_DIR / "rag_qa_memory.txt"
 MODEL_NAME = "gpt-4.1-mini"
 TOP_K = 5
 RAG_MIN_SIMILARITY = 0.52
+BUSINESS_SYNTHESIS_KEYWORDS = (
+    "action plan",
+    "analyze",
+    "business interpretation",
+    "campaign",
+    "create",
+    "design",
+    "explain",
+    "flow",
+    "insight",
+    "interpret",
+    "kpi",
+    "marketing",
+    "message",
+    "next step",
+    "plan",
+    "recommend",
+    "recommendation",
+    "segment",
+    "strategy",
+    "suggest",
+    "target",
+    "why",
+)
 NON_DATABASE_PATTERNS = (
     r"^\s*(hi|hello|hey|مرحبا|اهلا|أهلا|السلام عليكم)\s*[!.؟?]*\s*$",
     r"^\s*(thanks|thank you|شكرا|شكرًا)\s*[!.؟?]*\s*$",
@@ -225,6 +249,65 @@ def combine_agent_payloads(sql_payload, rag_payload):
         "source": "SQL Agent + RAG Agent",
         "matched_question": matched_question,
         "match_score": match_score,
+    }
+
+
+def needs_business_synthesis(question):
+    q = _normalize_question(question)
+    if any(re.search(pattern, q, flags=re.IGNORECASE) for pattern in NON_DATABASE_PATTERNS):
+        return False
+    return any(keyword in q for keyword in BUSINESS_SYNTHESIS_KEYWORDS)
+
+
+def synthesize_business_answer(question, payload):
+    load_openai_key()
+    if not os.environ.get("OPENAI_API_KEY") or not needs_business_synthesis(question):
+        return payload
+
+    grounded_answer = str(payload.get("answer", "")).strip()
+    sql = str(payload.get("sql", "")).strip()
+    source = payload.get("source", "SQL Agent")
+
+    prompt = f"""
+You are a smart telecom business assistant for Zain Jordan.
+
+The user asked:
+{question}
+
+Grounded data retrieved from SQL and/or RAG:
+{grounded_answer}
+
+SQL used, if available:
+{sql or "No SQL was provided."}
+
+Task:
+Create one complete, professional response that fully answers the user's request.
+
+Rules:
+- Use the retrieved data as the factual grounding.
+- If the user asks for planning, strategy, recommendations, messaging, targeting, KPIs, or business interpretation, generate those parts using business reasoning grounded in the data.
+- Do not only return a raw table unless the user asked for a simple lookup.
+- Do not invent database facts, counts, customer names, scores, or segments that are not present in the retrieved data.
+- You may create practical campaign ideas, channel recommendations, message examples, KPIs, and next steps when they logically follow from the retrieved data.
+- If the retrieved data is incomplete, say what is missing and still provide a useful recommendation based on available fields.
+- Keep the answer professional, concise, and actionable.
+- Use markdown section headers without numbering.
+
+Use these sections when relevant:
+Direct Data Answer
+Business Interpretation
+Recommended Strategy
+Suggested Actions
+Message Examples
+KPIs or Next Steps
+"""
+    model = init_chat_model(MODEL_NAME, model_provider="openai", temperature=0.2)
+    result = model.invoke([{"role": "user", "content": prompt}])
+    answer = result.content if hasattr(result, "content") else str(result)
+    return {
+        **payload,
+        "answer": str(answer).strip(),
+        "source": f"{source} + Business Assistant" if "Business Assistant" not in source else source,
     }
 
 
@@ -840,9 +923,6 @@ Always respond using this structure when possible:
 - Provide a practical next step when useful.
 - If no action is needed, omit this section.
 
-5. SQL Used
-- Include the SQL query used when available.
-
 Important:
 - Do not invent business insights.
 - Do not over-explain.
@@ -914,6 +994,7 @@ def ask_sql_agent_payload(question):
     if direct_payload:
         direct_payload["source"] = "SQL Agent"
         payload = combine_agent_payloads(direct_payload, rag_payload) if rag_payload else direct_payload
+        payload = synthesize_business_answer(question, payload)
         save_qa_to_memory(
             question,
             payload.get("answer", ""),
@@ -930,10 +1011,12 @@ def ask_sql_agent_payload(question):
             return rag_payload
 
         payload = combine_agent_payloads(sql_payload, rag_payload)
+        payload = synthesize_business_answer(question, payload)
         save_qa_to_memory(question, payload.get("answer", ""), payload.get("sql", ""), payload["source"])
         return payload
 
     payload = _ask_live_sql_agent_payload(question)
+    payload = synthesize_business_answer(question, payload)
     save_qa_to_memory(question, payload.get("answer", ""), payload.get("sql", ""), payload["source"])
     return payload
 
