@@ -869,6 +869,15 @@ def build_chat_history_context(chat, limit=8):
     return history
 
 
+def call_chat_backend(prompt, chat_history):
+    try:
+        return ask_sql_agent_payload(prompt, chat_history=chat_history)
+    except TypeError as exc:
+        if "chat_history" not in str(exc):
+            raise
+        return ask_sql_agent_payload(prompt)
+
+
 def ask_and_store(prompt):
     prompt = str(prompt).strip()
     if not prompt:
@@ -881,7 +890,7 @@ def ask_and_store(prompt):
 
     try:
         with st.spinner("Analyzing the database and preparing the answer..."):
-            payload = ask_sql_agent_payload(prompt, chat_history=chat_history)
+            payload = call_chat_backend(prompt, chat_history)
         answer = payload.get("answer", "No answer was returned.")
         sql = payload.get("sql", "")
         source = payload.get("source", "SQL Agent")
