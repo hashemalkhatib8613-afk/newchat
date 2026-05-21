@@ -852,6 +852,21 @@ def stream_markdown(text):
         time.sleep(0.006)
 
 
+def build_chat_history_context(chat, limit=8):
+    history = []
+    for message in chat.get("messages", [])[-limit:]:
+        item = {
+            "role": message.get("role", ""),
+            "content": str(message.get("content", ""))[:4000],
+        }
+        if message.get("source"):
+            item["source"] = message.get("source", "")
+        if message.get("sql"):
+            item["sql"] = message.get("sql", "")
+        history.append(item)
+    return history
+
+
 def ask_and_store(prompt):
     prompt = str(prompt).strip()
     if not prompt:
@@ -859,11 +874,12 @@ def ask_and_store(prompt):
     chat = current_chat()
     if chat["title"] == "New Chat":
         chat["title"] = title_from_question(prompt)
+    chat_history = build_chat_history_context(chat)
     chat["messages"].append({"role": "user", "content": prompt, "sql": ""})
 
     try:
         with st.spinner("Analyzing the database and preparing the answer..."):
-            payload = ask_sql_agent_payload(prompt)
+            payload = ask_sql_agent_payload(prompt, chat_history=chat_history)
         answer = payload.get("answer", "No answer was returned.")
         sql = payload.get("sql", "")
         source = payload.get("source", "SQL Agent")
