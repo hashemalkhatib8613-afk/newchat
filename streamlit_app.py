@@ -47,7 +47,7 @@ get_database_overview = backend.get_database_overview
 
 st.set_page_config(
     page_title="Zain Customer 360 Copilot",
-    page_icon=str(LOGO_PATH) if LOGO_PATH.exists() else "📊",
+    page_icon=str(LOGO_PATH) if LOGO_PATH.exists() else "ظ‹ع؛â€œظ¹",
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -76,11 +76,11 @@ SUGGESTED_QUESTIONS = [
 ]
 
 NAV_ITEMS = [
-    ("Chat", "AI Chat", "💬", "Ask business questions"),
-    ("Analytics", "Dynamic Analytics", "📊", "Filter KPIs and charts"),
-    ("Chart Builder", "Chart Builder", "📈", "Create custom visuals"),
-    ("SQL Query Builder", "SQL Workspace", "🧮", "Run safe SELECT queries"),
-    ("Suggested Questions", "Prompt Library", "✨", "Ready-made use cases"),
+    ("Chat", "AI Chat", "ظ‹ع؛â€™آ¬", "Ask business questions"),
+    ("Analytics", "Dynamic Analytics", "ظ‹ع؛â€œظ¹", "Filter KPIs and charts"),
+    ("Chart Builder", "Chart Builder", "ظ‹ع؛â€œث†", "Create custom visuals"),
+    ("SQL Query Builder", "SQL Workspace", "ظ‹ع؛آ§آ®", "Run safe SELECT queries"),
+    ("Suggested Questions", "Prompt Library", "أ¢إ“آ¨", "Ready-made use cases"),
 ]
 
 
@@ -202,7 +202,7 @@ def filter_options():
     }
 
 
-# ─────────────────────────── CSS ────────────────────────────
+# أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬ CSS أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬
 
 def inject_css():
     st.markdown(
@@ -211,9 +211,9 @@ def inject_css():
           @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap');
 
           :root {
-            --red:       #C8102E;
-            --red-dim:   rgba(200,16,46,.18);
-            --red-glow:  rgba(200,16,46,.35);
+            --accent:       #64CBF5;
+            --accent-dim:   rgba(100,203,245,.18);
+            --accent-glow:  rgba(100,203,245,.35);
             --bg:        #07080D;
             --bg2:       #0C0E16;
             --panel:     #10131C;
@@ -243,12 +243,12 @@ def inject_css():
 
           .stApp {
             background:
-              radial-gradient(ellipse 800px 600px at -10% -15%, rgba(200,16,46,.14) 0%, transparent 55%),
-              radial-gradient(ellipse 600px 500px at 110% 5%, rgba(120,16,46,.07) 0%, transparent 50%),
+              radial-gradient(ellipse 800px 600px at -10% -15%, rgba(100,203,245,.14) 0%, transparent 55%),
+              radial-gradient(ellipse 600px 500px at 110% 5%, rgba(146,50,167,.12) 0%, transparent 50%),
               var(--bg);
           }
 
-          /* ── Typography reset ── */
+          /* أ¢â€‌â‚¬أ¢â€‌â‚¬ Typography reset أ¢â€‌â‚¬أ¢â€‌â‚¬ */
           h1, h2, h3, h4, h5, h6 {
             font-family: var(--font-head);
             color: var(--text);
@@ -257,9 +257,9 @@ def inject_css():
 
           p, label, span, li { color: var(--text); }
 
-          a { color: var(--red); text-decoration: none; }
+          a { color: var(--accent); text-decoration: none; }
 
-          /* ── Block container ── */
+          /* أ¢â€‌â‚¬أ¢â€‌â‚¬ Block container أ¢â€‌â‚¬أ¢â€‌â‚¬ */
           .block-container {
             padding: 1.5rem 2.25rem 5rem !important;
             max-width: 1560px !important;
@@ -269,10 +269,10 @@ def inject_css():
             .block-container { padding: 1rem 1rem 5rem !important; }
           }
 
-          /* ─────────── SIDEBAR ─────────── */
+          /* أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬ SIDEBAR أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬ */
           section[data-testid="stSidebar"] {
             background:
-              radial-gradient(ellipse 260px 300px at 50% -10%, rgba(200,16,46,.22) 0%, transparent 60%),
+              radial-gradient(ellipse 260px 300px at 50% -10%, rgba(100,203,245,.22) 0%, transparent 60%),
               linear-gradient(180deg, #0A0C14 0%, #07080D 100%) !important;
             border-right: 1px solid rgba(255,255,255,.06) !important;
           }
@@ -310,21 +310,21 @@ def inject_css():
 
           /* New Chat primary button in sidebar */
           [data-testid="stSidebar"] .stButton > button[kind="primary"] {
-            background: linear-gradient(135deg, var(--red), #9B0B22) !important;
+            background: linear-gradient(135deg, var(--accent), #9232A7) !important;
             border-color: rgba(255,255,255,.14) !important;
             color: #fff !important;
             font-weight: 600;
             font-size: .85rem;
           }
 
-          /* ── Sidebar brand block ── */
+          /* أ¢â€‌â‚¬أ¢â€‌â‚¬ Sidebar brand block أ¢â€‌â‚¬أ¢â€‌â‚¬ */
           .sb-brand {
             display: flex;
             align-items: center;
             gap: .75rem;
             padding: .85rem .95rem;
-            background: rgba(200,16,46,.1);
-            border: 1px solid rgba(200,16,46,.22);
+            background: rgba(100,203,245,.10);
+            border: 1px solid rgba(100,203,245,.22);
             border-radius: var(--radius-lg);
             margin-bottom: 1.25rem;
           }
@@ -333,7 +333,7 @@ def inject_css():
             width: 36px;
             height: 36px;
             border-radius: 10px;
-            background: linear-gradient(135deg, var(--red), #7A0A1C);
+            background: linear-gradient(135deg, var(--accent), #6F4BD8);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -372,8 +372,8 @@ def inject_css():
             align-items: center;
             gap: .6rem;
             padding: .62rem .9rem;
-            background: rgba(200,16,46,.15);
-            border: 1px solid rgba(200,16,46,.30);
+            background: rgba(100,203,245,.15);
+            border: 1px solid rgba(100,203,245,.30);
             border-radius: 12px;
             margin-bottom: .75rem;
             cursor: default;
@@ -401,11 +401,11 @@ def inject_css():
             width: 6px;
             height: 6px;
             border-radius: 50%;
-            background: var(--red);
-            box-shadow: 0 0 6px var(--red);
+            background: var(--accent);
+            box-shadow: 0 0 6px var(--accent);
           }
 
-          /* ─────────── HERO BANNER ─────────── */
+          /* أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬ HERO BANNER أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬ */
           .hero {
             position: relative;
             overflow: hidden;
@@ -413,7 +413,7 @@ def inject_css():
             border-radius: var(--radius-xl);
             padding: 1.5rem 1.75rem;
             background:
-              radial-gradient(ellipse 60% 120% at 0% 50%, rgba(200,16,46,.20) 0%, transparent 55%),
+              radial-gradient(ellipse 60% 120% at 0% 50%, rgba(100,203,245,.20) 0%, transparent 55%),
               linear-gradient(135deg, var(--panel), var(--panel2));
             margin-bottom: 1.4rem;
           }
@@ -432,10 +432,10 @@ def inject_css():
             align-items: center;
             gap: .4rem;
             padding: .28rem .6rem;
-            background: rgba(200,16,46,.14);
-            border: 1px solid rgba(200,16,46,.28);
+            background: rgba(100,203,245,.14);
+            border: 1px solid rgba(100,203,245,.28);
             border-radius: 999px;
-            color: #FF5B70 !important;
+            color: #7FD8FF !important;
             font-family: var(--font-head);
             font-size: .67rem;
             font-weight: 700;
@@ -487,7 +487,7 @@ def inject_css():
             .hero-logo-wrap { display: none; }
           }
 
-          /* ─────────── KPI CARDS ─────────── */
+          /* أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬ KPI CARDS أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬ */
           .kpi-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
@@ -510,7 +510,7 @@ def inject_css():
             position: absolute;
             top: 0; left: 0; right: 0;
             height: 2px;
-            background: linear-gradient(90deg, var(--red), transparent);
+            background: linear-gradient(90deg, var(--accent), transparent);
             opacity: 0;
             transition: opacity .2s;
           }
@@ -544,7 +544,7 @@ def inject_css():
             line-height: 1.35;
           }
 
-          /* ─────────── CARDS & SHELLS ─────────── */
+          /* أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬ CARDS & SHELLS أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬ */
           .card {
             background: var(--panel);
             border: 1px solid var(--border);
@@ -561,7 +561,7 @@ def inject_css():
             margin-bottom: .65rem;
           }
 
-          /* ─────────── PROMPT CARDS ─────────── */
+          /* أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬ PROMPT CARDS أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬ */
           .prompt-card {
             border: 1px solid var(--border);
             border-radius: var(--radius-lg);
@@ -573,7 +573,7 @@ def inject_css():
           }
 
           .prompt-card:hover {
-            border-color: rgba(200,16,46,.28);
+            border-color: rgba(100,203,245,.28);
             background: var(--panel2);
           }
 
@@ -583,7 +583,7 @@ def inject_css():
             font-weight: 700;
             letter-spacing: .12em;
             text-transform: uppercase;
-            color: var(--red) !important;
+            color: var(--accent) !important;
             margin-bottom: .42rem;
           }
 
@@ -594,7 +594,7 @@ def inject_css():
             line-height: 1.5;
           }
 
-          /* ─────────── QUICK PROMPT CHIPS ─────────── */
+          /* أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬ QUICK PROMPT CHIPS أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬ */
           .quick-chip-wrap {
             display: flex;
             flex-wrap: wrap;
@@ -602,7 +602,7 @@ def inject_css():
             margin-bottom: 1rem;
           }
 
-          /* ─────────── SECTION HEADERS ─────────── */
+          /* أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬ SECTION HEADERS أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬ */
           .section-hd {
             display: flex;
             align-items: baseline;
@@ -624,15 +624,15 @@ def inject_css():
             color: var(--soft) !important;
           }
 
-          /* ─────────── TAGS / BADGES ─────────── */
+          /* أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬ TAGS / BADGES أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬ */
           .badge {
             display: inline-flex;
             align-items: center;
             padding: .22rem .52rem;
             border-radius: 999px;
-            background: var(--red-dim);
-            border: 1px solid rgba(200,16,46,.22);
-            color: #FF6B7A !important;
+            background: var(--accent-dim);
+            border: 1px solid rgba(100,203,245,.22);
+            color: #8BE0FF !important;
             font-size: .69rem;
             font-weight: 600;
             margin: .1rem .18rem .1rem 0;
@@ -656,10 +656,10 @@ def inject_css():
             color: var(--danger) !important;
           }
 
-          /* ─────────── DIVIDER ─────────── */
+          /* أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬ DIVIDER أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬ */
           hr { border-color: var(--border) !important; margin: .75rem 0 !important; }
 
-          /* ─────────── BUTTONS (main content) ─────────── */
+          /* أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬ BUTTONS (main content) أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬ */
           .stButton > button,
           .stDownloadButton > button,
           div[data-testid="stFormSubmitButton"] > button {
@@ -677,7 +677,7 @@ def inject_css():
 
           .stButton > button:hover,
           .stDownloadButton > button:hover {
-            border-color: rgba(200,16,46,.45) !important;
+            border-color: rgba(100,203,245,.45) !important;
             background: var(--panel) !important;
             transform: translateY(-1px) !important;
           }
@@ -685,17 +685,17 @@ def inject_css():
           .stButton > button[kind="primary"],
           .stDownloadButton > button[kind="primary"],
           div[data-testid="stFormSubmitButton"] > button {
-            background: linear-gradient(135deg, var(--red), #9B0B22) !important;
+            background: linear-gradient(135deg, var(--accent), #9232A7) !important;
             border-color: rgba(255,255,255,.14) !important;
             color: #fff !important;
             font-weight: 600 !important;
           }
 
           .stButton > button[kind="primary"]:hover {
-            background: linear-gradient(135deg, #E0162E, #7A0A1C) !important;
+            background: linear-gradient(135deg, #7DDCFF, #6F4BD8) !important;
           }
 
-          /* ─────────── INPUTS ─────────── */
+          /* أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬ INPUTS أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬ */
           input,
           textarea,
           div[data-baseweb="select"] > div,
@@ -715,10 +715,10 @@ def inject_css():
           /* Slider */
           .stSlider [data-testid="stTickBar"] { display: none; }
           .stSlider [data-baseweb="slider"] div[role="slider"] {
-            background: var(--red) !important;
+            background: var(--accent) !important;
           }
 
-          /* ─────────── TABS ─────────── */
+          /* أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬ TABS أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬ */
           div[data-testid="stTabs"] [role="tablist"] {
             gap: .3rem;
             border-bottom: 1px solid var(--border) !important;
@@ -749,7 +749,7 @@ def inject_css():
             border-color: var(--border) !important;
           }
 
-          /* ─────────── CHAT MESSAGES ─────────── */
+          /* أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬ CHAT MESSAGES أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬ */
           .stChatMessage {
             background: var(--panel) !important;
             border: 1px solid var(--border) !important;
@@ -773,7 +773,7 @@ def inject_css():
             border: none !important;
           }
 
-          /* ─────────── METRICS ─────────── */
+          /* أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬ METRICS أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬ */
           div[data-testid="stMetric"] {
             background: var(--panel);
             border: 1px solid var(--border);
@@ -796,7 +796,7 @@ def inject_css():
             color: #fff !important;
           }
 
-          /* ─────────── DATAFRAME ─────────── */
+          /* أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬ DATAFRAME أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬ */
           div[data-testid="stDataFrame"],
           div[data-testid="stTable"] {
             border-radius: var(--radius-lg);
@@ -804,7 +804,7 @@ def inject_css():
             border: 1px solid var(--border);
           }
 
-          /* ─────────── EXPANDER ─────────── */
+          /* أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬ EXPANDER أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬ */
           div[data-testid="stExpander"] {
             background: var(--panel2) !important;
             border: 1px solid var(--border) !important;
@@ -822,41 +822,41 @@ def inject_css():
             color: var(--text) !important;
           }
 
-          /* ─────────── CONTAINERS WITH BORDER ─────────── */
+          /* أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬ CONTAINERS WITH BORDER أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬ */
           div[data-testid="stVerticalBlockBorderWrapper"] {
             border: 1px solid var(--border) !important;
             border-radius: var(--radius-lg) !important;
             background: var(--panel) !important;
           }
 
-          /* ─────────── ALERTS ─────────── */
+          /* أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬ ALERTS أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬ */
           div[data-testid="stAlert"] {
             border-radius: var(--radius) !important;
             border: 1px solid var(--border) !important;
             font-family: var(--font-body) !important;
           }
 
-          /* ─────────── CODE ─────────── */
+          /* أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬ CODE أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬ */
           .stCode, pre {
             border-radius: var(--radius) !important;
             border: 1px solid var(--border) !important;
           }
 
-          /* ─────────── SPINNER ─────────── */
-          .stSpinner > div { border-top-color: var(--red) !important; }
+          /* أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬ SPINNER أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬ */
+          .stSpinner > div { border-top-color: var(--accent) !important; }
 
-          /* ─────────── HIDE DEFAULT STREAMLIT CHROME ─────────── */
+          /* أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬ HIDE DEFAULT STREAMLIT CHROME أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬ */
           footer, #MainMenu, [data-testid="stToolbar"] { visibility: hidden; }
 
-          /* ─────────── SCROLLBAR ─────────── */
+          /* أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬ SCROLLBAR أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬ */
           ::-webkit-scrollbar { width: 5px; height: 5px; }
           ::-webkit-scrollbar-track { background: transparent; }
           ::-webkit-scrollbar-thumb { background: rgba(255,255,255,.12); border-radius: 999px; }
           ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,.22); }
 
-          /* ─────────── SELECT SLIDER OVERRIDE ─────────── */
+          /* أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬ SELECT SLIDER OVERRIDE أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬ */
           .stSelectSlider [data-baseweb="slider"] [role="slider"] {
-            background: var(--red) !important;
+            background: var(--accent) !important;
           }
         </style>
         """,
@@ -866,7 +866,7 @@ def inject_css():
     st.session_state.plot_template = "plotly_dark"
 
 
-# ─────────────────────────── HELPERS ────────────────────────────
+# أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬ HELPERS أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬
 
 def hero(title, copy, eyebrow="Zain 360 Copilot"):
     logo_html = ""
@@ -878,7 +878,7 @@ def hero(title, copy, eyebrow="Zain 360 Copilot"):
     st.markdown(
         f"""
         <div class="hero">
-          <div class="hero-eyebrow">◆ {eyebrow}</div>
+          <div class="hero-eyebrow">أ¢â€”â€  {eyebrow}</div>
           <div class="hero-title">{title}</div>
           <p class="hero-copy">{copy}</p>
           {logo_html}
@@ -944,7 +944,7 @@ def plotly_layout(fig, height=400, legend=True):
         ) if legend else None,
         xaxis=dict(gridcolor="rgba(255,255,255,.05)", linecolor="rgba(255,255,255,.06)"),
         yaxis=dict(gridcolor="rgba(255,255,255,.05)", linecolor="rgba(255,255,255,.06)"),
-        colorway=["#C8102E", "#FF5B70", "#22D3A0", "#F5BE47", "#7B94FF", "#FF9F52"],
+        colorway=["#64CBF5", "#7FD8FF", "#6F4BD8", "#B43AA7", "#22D3A0", "#F5BE47"],
     )
     return fig
 
@@ -955,7 +955,7 @@ def build_chart(df, chart_type, title, x="label", y="value", color=None, height=
         return
 
     common = dict(template="plotly_dark", height=height, title=title,
-                  color_discrete_sequence=["#C8102E", "#FF5B70", "#22D3A0", "#F5BE47", "#7B94FF", "#FF9F52"])
+                  color_discrete_sequence=["#64CBF5", "#7FD8FF", "#6F4BD8", "#B43AA7", "#22D3A0", "#F5BE47"])
     if chart_type == "pie":
         fig = px.pie(df, names=x, values=y, **common)
     elif chart_type == "doughnut":
@@ -1029,7 +1029,7 @@ def ask_and_store(prompt):
     chat["messages"].append({"role": "user", "content": prompt, "sql": ""})
 
     try:
-        with st.spinner("Analyzing the database…"):
+        with st.spinner("Analyzing the databaseأ¢â‚¬آ¦"):
             payload = call_chat_backend(prompt, chat_history)
         answer = payload.get("answer", "No answer was returned.")
         sql = payload.get("sql", "")
@@ -1079,7 +1079,7 @@ def render_sql_runner(default_sql="", key_prefix="sql_runner"):
     col_run, col_clr, col_tip = st.columns([1, 1, 3])
     with col_run:
         st.button(
-            "▶  Run query",
+            "أ¢â€“آ¶  Run query",
             type="primary",
             key=f"{key_prefix}_run_button",
             on_click=run_sql_callback,
@@ -1087,7 +1087,7 @@ def render_sql_runner(default_sql="", key_prefix="sql_runner"):
             use_container_width=True,
         )
     with col_clr:
-        if st.button("✕  Clear", key=f"{key_prefix}_clear", use_container_width=True):
+        if st.button("أ¢إ“â€¢  Clear", key=f"{key_prefix}_clear", use_container_width=True):
             st.session_state[f"{key_prefix}_sql_result"] = None
             st.session_state[f"{key_prefix}_sql_error"] = ""
             st.rerun()
@@ -1100,12 +1100,12 @@ def render_sql_runner(default_sql="", key_prefix="sql_runner"):
         st.error(f"Query failed: {error}")
     elif result:
         rows = result.get("rows", [])
-        st.success(f"✓  Returned {len(rows):,} row(s).")
+        st.success(f"أ¢إ“â€œ  Returned {len(rows):,} row(s).")
         if rows:
             df = pd.DataFrame(rows)
             st.dataframe(df, use_container_width=True, hide_index=True)
             st.download_button(
-                "⬇  Export as CSV",
+                "أ¢آ¬â€،  Export as CSV",
                 df.to_csv(index=False).encode("utf-8"),
                 file_name="sql_result.csv",
                 mime="text/csv",
@@ -1154,7 +1154,7 @@ def build_filtered_analytics(month_start, month_end, cities, segments, risk_leve
     return df, sql, params
 
 
-# ─────────────────────────── PAGES ────────────────────────────
+# أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬ PAGES أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬
 
 def show_chat():
     chat = current_chat()
@@ -1168,7 +1168,7 @@ def show_chat():
     q_cols = st.columns(4)
     for i, question in enumerate(SUGGESTED_QUESTIONS[:4]):
         with q_cols[i]:
-            label = question[:52] + "…" if len(question) > 52 else question
+            label = question[:52] + "أ¢â‚¬آ¦" if len(question) > 52 else question
             if st.button(label, key=f"quick_{i}", use_container_width=True):
                 st.session_state.pending_prompt = question
                 st.rerun()
@@ -1182,7 +1182,7 @@ def show_chat():
             st.markdown(message.get("content", ""))
             if "RAG Agent" in message.get("source", "") and message.get("matched_question"):
                 score = message.get("match_score", "")
-                score_text = f"  ·  Similarity: {score}" if score != "" else ""
+                score_text = f"  ط¢آ·  Similarity: {score}" if score != "" else ""
                 st.caption(f"Memory match: {message['matched_question']}{score_text}")
             if message.get("sql"):
                 with st.expander("View generated SQL"):
@@ -1194,7 +1194,7 @@ def show_chat():
         ask_and_store(pending)
         st.rerun()
 
-    prompt = st.chat_input("Ask about churn, customers, revenue, billing, campaigns, complaints, or network impact…")
+    prompt = st.chat_input("Ask about churn, customers, revenue, billing, campaigns, complaints, or network impactأ¢â‚¬آ¦")
     if prompt:
         ask_and_store(prompt)
         st.rerun()
@@ -1232,16 +1232,16 @@ def show_dynamic_analytics():
 
         qb1, qb2, qb3, qb4 = st.columns(4)
         with qb1:
-            if st.button("⚠  High-risk only", use_container_width=True):
+            if st.button("أ¢ع‘آ   High-risk only", use_container_width=True):
                 risk_levels = ["High"]
         with qb2:
-            if st.button("★  VIP customers", use_container_width=True):
+            if st.button("أ¢ع©â€¦  VIP customers", use_container_width=True):
                 segments = ["VIP"] if "VIP" in options["segments"] else segments
         with qb3:
-            if st.button("📍 Amman view", use_container_width=True):
+            if st.button("ظ‹ع؛â€œع† Amman view", use_container_width=True):
                 cities = ["Amman"] if "Amman" in options["cities"] else cities
         with qb4:
-            if st.button("↺  Reset all filters", use_container_width=True):
+            if st.button("أ¢â€ ط›  Reset all filters", use_container_width=True):
                 cities, segments, risk_levels, service_types = [], [], [], []
 
     df, sql, params = build_filtered_analytics(month_start, month_end, cities, segments, risk_levels, service_types)
@@ -1268,7 +1268,7 @@ def show_dynamic_analytics():
     with k6: kpi_card("Support", format_num(support), "Interactions")
 
     chart_type = CHART_TYPES[chart_label]
-    chart_tabs = st.tabs(["📈 Revenue", "🔴 Risk", "🏷 Segments", "🗺 Cities", "📶 Usage", "👥 Customers"])
+    chart_tabs = st.tabs(["ظ‹ع؛â€œث† Revenue", "ظ‹ع؛â€‌آ´ Risk", "ظ‹ع؛عˆآ· Segments", "ظ‹ع؛â€”ط› Cities", "ظ‹ع؛â€œآ¶ Usage", "ظ‹ع؛â€کآ¥ Customers"])
 
     with chart_tabs[0]:
         monthly = (
@@ -1317,7 +1317,7 @@ def show_dynamic_analytics():
             usage, x="summary_month", y="value", color="metric", markers=True,
             title="Average usage trend",
             template="plotly_dark",
-            color_discrete_sequence=["#C8102E", "#22D3A0", "#F5BE47"],
+            color_discrete_sequence=["#64CBF5", "#6F4BD8", "#B43AA7"],
         )
         st.plotly_chart(plotly_layout(fig), use_container_width=True)
 
@@ -1338,7 +1338,7 @@ def show_dynamic_analytics():
         )
         st.dataframe(customer_view, use_container_width=True, hide_index=True)
         st.download_button(
-            "⬇  Export filtered customers",
+            "أ¢آ¬â€،  Export filtered customers",
             customer_view.to_csv(index=False).encode("utf-8"),
             file_name="filtered_customers.csv",
             mime="text/csv",
@@ -1367,12 +1367,12 @@ def show_chart_builder():
         with c1:
             chart_label = st.selectbox("Chart type", list(CHART_TYPES.keys()))
         with c2:
-            run = st.button("▶  Build chart", type="primary", use_container_width=True)
+            run = st.button("أ¢â€“آ¶  Build chart", type="primary", use_container_width=True)
         with c3:
-            st.caption("Tip: describe one clear metric — e.g. 'churn by city', 'conversion by campaign', 'complaints by category'.")
+            st.caption("Tip: describe one clear metric أ¢â‚¬â€‌ e.g. 'churn by city', 'conversion by campaign', 'complaints by category'.")
 
     if run:
-        with st.spinner("Querying database and building chart…"):
+        with st.spinner("Querying database and building chartأ¢â‚¬آ¦"):
             st.session_state.last_chart = build_chart_from_question(question, CHART_TYPES[chart_label])
 
     if st.session_state.last_chart:
@@ -1384,7 +1384,7 @@ def show_chart_builder():
 def show_sql_workspace():
     hero(
         "SQL Workspace",
-        "A clean read-only SQL environment for analysts. Only SELECT statements are permitted — no schema mutations.",
+        "A clean read-only SQL environment for analysts. Only SELECT statements are permitted أ¢â‚¬â€‌ no schema mutations.",
         "Safe query runner",
     )
 
@@ -1415,7 +1415,7 @@ ORDER BY total DESC""",
         selected_template = st.selectbox("Query template", list(templates.keys()))
     with b_col:
         st.write("")
-        if st.button("⬆  Load template", use_container_width=True):
+        if st.button("أ¢آ¬â€   Load template", use_container_width=True):
             st.session_state["standalone_sql_editor"] = templates[selected_template]
             st.rerun()
 
@@ -1441,7 +1441,7 @@ def show_suggested_questions():
                 """,
                 unsafe_allow_html=True,
             )
-            if st.button("Send to AI Chat →", key=f"suggested_{i}", use_container_width=True):
+            if st.button("Send to AI Chat أ¢â€ â€™", key=f"suggested_{i}", use_container_width=True):
                 st.session_state.pending_prompt = question
                 st.session_state.page = "Chat"
                 st.rerun()
@@ -1450,7 +1450,7 @@ def show_suggested_questions():
 def show_customer_insights():
     hero(
         "Customer Insights",
-        "Search for any customer and view their full 360° profile — churn risk, value, billing, complaints, support, and usage.",
+        "Search for any customer and view their full 360ط¢آ° profile أ¢â‚¬â€‌ churn risk, value, billing, complaints, support, and usage.",
         "Single customer view",
     )
 
@@ -1479,11 +1479,11 @@ def show_customer_insights():
         return
 
     labels = [
-        f"{row.customer_id} · {row.full_name} · {row.city} · {row.customer_segment}"
+        f"{row.customer_id} ط¢آ· {row.full_name} ط¢آ· {row.city} ط¢آ· {row.customer_segment}"
         for row in candidates.itertuples()
     ]
     selected_label = st.selectbox("Select customer", labels)
-    customer_id = int(selected_label.split(" · ")[0])
+    customer_id = int(selected_label.split(" ط¢آ· ")[0])
 
     customer = query_df(
         """SELECT c.*, ch.churn_score, ch.risk_level, ch.main_risk_reason, ch.recommended_action,
@@ -1519,13 +1519,13 @@ def show_customer_insights():
         unsafe_allow_html=True,
     )
 
-    tabs = st.tabs(["👤 Profile", "📡 Subscriptions", "💳 Billing", "⚠ Complaints", "🎧 Support", "📊 Monthly usage", "🤖 Ask AI"])
+    tabs = st.tabs(["ظ‹ع؛â€کآ¤ Profile", "ظ‹ع؛â€œطŒ Subscriptions", "ظ‹ع؛â€™آ³ Billing", "أ¢ع‘آ  Complaints", "ظ‹ع؛عکآ§ Support", "ظ‹ع؛â€œظ¹ Monthly usage", "ظ‹ع؛آ¤â€“ Ask AI"])
 
     with tabs[0]:
         profile_df = customer.to_frame(name="value").reset_index().rename(columns={"index": "field"})
         st.dataframe(profile_df, use_container_width=True, hide_index=True)
         st.download_button(
-            "⬇  Export profile",
+            "أ¢آ¬â€،  Export profile",
             profile_df.to_csv(index=False).encode("utf-8"),
             file_name=f"customer_{customer_id}_profile.csv",
             mime="text/csv",
@@ -1596,7 +1596,7 @@ def show_customer_insights():
                 markers=True,
                 title="Customer monthly trend",
                 template="plotly_dark",
-                color_discrete_sequence=["#C8102E", "#22D3A0", "#F5BE47"],
+                color_discrete_sequence=["#64CBF5", "#6F4BD8", "#B43AA7"],
             )
             st.plotly_chart(plotly_layout(fig), use_container_width=True)
             st.dataframe(monthly, use_container_width=True, hide_index=True)
@@ -1604,7 +1604,7 @@ def show_customer_insights():
     with tabs[6]:
         suggested = f"Show me the full profile, plan, complaints, churn risk, and recommended action for customer {customer_id}."
         st.code(suggested)
-        if st.button("Send to AI Chat →", type="primary", use_container_width=True):
+        if st.button("Send to AI Chat أ¢â€ â€™", type="primary", use_container_width=True):
             st.session_state.pending_prompt = suggested
             st.session_state.page = "Chat"
             st.rerun()
@@ -1641,7 +1641,7 @@ def show_data_catalog():
 
     with st.expander("Export catalog"):
         st.download_button(
-            "⬇  Download table inventory",
+            "أ¢آ¬â€،  Download table inventory",
             inventory.to_csv(index=False).encode("utf-8"),
             file_name="data_catalog.csv",
             mime="text/csv",
@@ -1649,24 +1649,24 @@ def show_data_catalog():
         )
 
 
-# ─────────────────────────── SIDEBAR ────────────────────────────
+# أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬ SIDEBAR أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬
 
 def render_sidebar():
     with st.sidebar:
         st.markdown(
             f"""
             <div class="sb-brand">
-              <div class="sb-brand-mark">{'<img src="' + LOGO_DATA_URI + '" style="width:22px;opacity:.85;">' if LOGO_DATA_URI else '📊'}</div>
+              <div class="sb-brand-mark">{'<img src="' + LOGO_DATA_URI + '" style="width:22px;opacity:.85;">' if LOGO_DATA_URI else 'ظ‹ع؛â€œظ¹'}</div>
               <div class="sb-brand-text">
                 <div class="sb-brand-title">Customer 360</div>
-                <div class="sb-brand-sub">AI Copilot · Zain</div>
+                <div class="sb-brand-sub">AI Copilot ط¢آ· Zain</div>
               </div>
             </div>
             """,
             unsafe_allow_html=True,
         )
 
-        if st.button("＋  New Chat", type="primary", use_container_width=True):
+        if st.button("أ¯آ¼â€¹  New Chat", type="primary", use_container_width=True):
             create_new_chat()
             st.rerun()
 
@@ -1689,13 +1689,13 @@ def render_sidebar():
 
         st.markdown('<div class="sb-label">Saved chats</div>', unsafe_allow_html=True)
         for chat in st.session_state.chat_sessions[:8]:
-            label = "💬  " + chat["title"]
+            label = "ظ‹ع؛â€™آ¬  " + chat["title"]
             if st.button(label, key=f"select_{chat['id']}", use_container_width=True):
                 st.session_state.current_chat_id = chat["id"]
                 st.session_state.page = "Chat"
                 st.rerun()
 
-        if st.button("✕  Delete current chat", key="del_chat", use_container_width=True):
+        if st.button("أ¢إ“â€¢  Delete current chat", key="del_chat", use_container_width=True):
             delete_current_chat()
             st.rerun()
 
@@ -1706,7 +1706,7 @@ def render_sidebar():
                 st.rerun()
 
 
-# ─────────────────────────── MAIN ────────────────────────────
+# أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬ MAIN أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬أ¢â€‌â‚¬
 
 def main():
     ensure_state()
