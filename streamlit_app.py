@@ -46,7 +46,7 @@ from class3_sql_agent_backend import (  # noqa: E402
 
 st.set_page_config(
     page_title="Zain Customer 360 Copilot",
-    page_icon=str(LOGO_PATH) if LOGO_PATH.exists() else "⚡",
+    page_icon=str(LOGO_PATH) if LOGO_PATH.exists() else "âڑ،",
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -75,13 +75,11 @@ SUGGESTED_QUESTIONS = [
 ]
 
 NAV_ITEMS = [
-    ("Chat", "AI Chat", "💬", "Ask business questions"),
-    ("Analytics", "Dynamic Analytics", "📊", "Filter KPIs and charts"),
-    ("Customer Insights", "Customer Insights", "👤", "Inspect one customer"),
-    ("Chart Builder", "Chart Builder", "📈", "Create custom visuals"),
-    ("SQL Query Builder", "SQL Workspace", "🧮", "Run safe SELECT queries"),
-    ("Suggested Questions", "Prompt Library", "✨", "Ready-made use cases"),
-    ("Data Catalog", "Data Catalog", "🗂️", "Browse tables and fields"),
+    ("Chat", "AI Chat", "ًں’¬", "Ask business questions"),
+    ("Analytics", "Dynamic Analytics", "ًں“ٹ", "Filter KPIs and charts"),
+    ("Chart Builder", "Chart Builder", "ًں“ˆ", "Create custom visuals"),
+    ("SQL Query Builder", "SQL Workspace", "ًں§®", "Run safe SELECT queries"),
+    ("Suggested Questions", "Prompt Library", "âœ¨", "Ready-made use cases"),
 ]
 
 
@@ -1012,7 +1010,7 @@ def show_chat():
     chat = current_chat()
     hero(
         "Customer 360 Chat",
-        "Ask direct business questions and inspect the SQL behind answers. Your chat sessions are saved during this browser session.",
+        "Ask direct business questions. Your chat sessions are saved during this browser session.",
         "Conversational analytics",
     )
 
@@ -1036,9 +1034,6 @@ def show_chat():
                 score = message.get("match_score", "")
                 score_text = f" Similarity: {score}" if score != "" else ""
                 st.caption(f"Memory match: {message['matched_question']}.{score_text}")
-            if message.get("sql"):
-                with st.expander("SQL visibility"):
-                    render_sql_runner(message["sql"], key_prefix=f"{chat['id']}_history_{index}")
 
     if st.session_state.pending_prompt:
         pending = st.session_state.pending_prompt
@@ -1336,11 +1331,11 @@ def show_customer_insights():
         return
 
     labels = [
-        f"{row.customer_id} · {row.full_name} · {row.city} · {row.customer_segment}"
+        f"{row.customer_id} آ· {row.full_name} آ· {row.city} آ· {row.customer_segment}"
         for row in candidates.itertuples()
     ]
     selected_label = st.selectbox("Select customer", labels)
-    customer_id = int(selected_label.split(" · ")[0])
+    customer_id = int(selected_label.split(" آ· ")[0])
 
     customer = query_df(
         """
@@ -1659,13 +1654,13 @@ def render_sidebar():
             unsafe_allow_html=True,
         )
 
-        if st.button("＋ New Chat", type="primary", use_container_width=True):
+        if st.button("ï¼‹ New Chat", type="primary", use_container_width=True):
             create_new_chat()
             st.rerun()
 
         st.markdown('<div class="side-label">Saved chats</div>', unsafe_allow_html=True)
         for chat in st.session_state.chat_sessions[:8]:
-            label = "💬 " + chat["title"]
+            label = "ًں’¬ " + chat["title"]
             if st.button(label, key=f"select_{chat['id']}", use_container_width=True):
                 st.session_state.current_chat_id = chat["id"]
                 st.session_state.page = "Chat"
@@ -1692,19 +1687,16 @@ def main():
         show_chat()
     elif page == "Analytics":
         show_dynamic_analytics()
-    elif page == "Customer Insights":
-        show_customer_insights()
     elif page == "Chart Builder":
         show_chart_builder()
     elif page == "SQL Query Builder":
         show_sql_workspace()
     elif page == "Suggested Questions":
         show_suggested_questions()
-    elif page == "Data Catalog":
-        show_data_catalog()
     else:
         show_chat()
 
 
 if __name__ == "__main__":
     main()
+
