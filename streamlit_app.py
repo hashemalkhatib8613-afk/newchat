@@ -722,6 +722,35 @@ def inject_css():
 
         /* ─────────── DIVIDER ─────────── */
         hr { border-color: rgba(255,255,255,.07) !important; margin: .65rem 0 !important; }
+
+        /* Chat composer with inline mic and send buttons */
+        .chat-composer-shell {
+          margin-top: .75rem;
+          padding: .55rem;
+          border: 1px solid rgba(255,255,255,.08);
+          border-radius: var(--rl);
+          background: var(--s1);
+        }
+        .chat-composer-shell div[data-testid="stForm"] {
+          border: none !important;
+        }
+        .chat-composer-shell div[data-baseweb="input"] > div {
+          min-height: 38px !important;
+          border: none !important;
+          background: transparent !important;
+          box-shadow: none !important;
+        }
+        .chat-composer-shell input {
+          font-size: .86rem !important;
+        }
+        .chat-composer-shell .stButton > button,
+        .chat-composer-shell div[data-testid="stFormSubmitButton"] > button {
+          min-height: 38px !important;
+          height: 38px !important;
+          justify-content: center !important;
+          text-align: center !important;
+          padding: 0 !important;
+        }
         </style>
         """,
         unsafe_allow_html=True,
@@ -923,23 +952,27 @@ def transcribe_voice(audio_bytes):
             pass
 
 
-def render_voice_input():
-    st.markdown("##### Voice input")
+def render_voice_input(compact=False):
+    if not compact:
+        st.markdown("##### Voice input")
     if mic_recorder is None:
-        st.info("Voice recording is not installed yet. Install dependencies from requirements.txt, then restart Streamlit.")
+        if compact:
+            st.caption("Mic unavailable")
+        else:
+            st.info("Voice recording is not installed yet. Install dependencies from requirements.txt, then restart Streamlit.")
         return
 
     audio = mic_recorder(
-        start_prompt="Start recording",
-        stop_prompt="Stop recording",
+        start_prompt="🎙" if compact else "Start recording",
+        stop_prompt="■" if compact else "Stop recording",
         just_once=False,
         format="wav",
         use_container_width=True,
-        key="voice_recorder",
+        key="voice_recorder_compact" if compact else "voice_recorder",
     )
     audio_bytes = extract_audio_bytes(audio)
     if not audio_bytes:
-        if st.session_state.last_voice_transcript:
+        if not compact and st.session_state.last_voice_transcript:
             st.caption(f"Last transcript: {st.session_state.last_voice_transcript}")
         return
 
@@ -958,6 +991,32 @@ def render_voice_input():
         st.rerun()
     else:
         st.warning("I could not detect speech in that recording. Please try again.")
+
+
+def render_chat_composer():
+    if st.session_state.get("clear_chat_composer"):
+        st.session_state.chat_composer_text = ""
+        st.session_state.clear_chat_composer = False
+
+    st.markdown('<div class="chat-composer-shell">', unsafe_allow_html=True)
+    text_col, mic_col, send_col = st.columns([10, 1, 1])
+    with text_col:
+        prompt = st.text_input(
+            "Ask a question",
+            placeholder="Ask about churn, customers, revenue, billing, campaigns...",
+            label_visibility="collapsed",
+            key="chat_composer_text",
+        )
+    with mic_col:
+        render_voice_input(compact=True)
+    with send_col:
+        submitted = st.button("↑", use_container_width=True, key="chat_composer_send")
+    st.markdown("</div>", unsafe_allow_html=True)
+
+    if submitted and prompt:
+        ask_and_store(prompt)
+        st.session_state.clear_chat_composer = True
+        st.rerun()
 
 
 def ask_and_store(prompt):
@@ -1109,9 +1168,10 @@ def show_chat():
                 score = message.get("match_score", "")
                 score_text = f"  ·  Similarity: {score}" if score != "" else ""
                 st.caption(f"Memory match: {message['matched_question']}{score_text}")
-         
+            if message.get("sql"):
+                with st.expander("View generated SQL"):
+                    st.code(message["sql"], language="sql")
 
-    render_voice_input()
 
     if st.session_state.pending_prompt:
         pending = st.session_state.pending_prompt
@@ -1119,10 +1179,7 @@ def show_chat():
         ask_and_store(pending)
         st.rerun()
 
-    prompt = st.chat_input("Ask about churn, customers, revenue, billing, campaigns, complaints, or network impact…")
-    if prompt:
-        ask_and_store(prompt)
-        st.rerun()
+    render_chat_composer()
 
 
 def show_dynamic_analytics():
