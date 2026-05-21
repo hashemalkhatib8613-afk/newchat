@@ -220,10 +220,10 @@ def inject_css():
           --s1:        #111421;
           --s2:        #171A27;
           --s3:        #1C2030;
-          --red:       #CF1239;
-          --red-a:     rgba(207,18,57,.13);
-          --red-b:     rgba(207,18,57,.28);
-          --red-c:     rgba(207,18,57,.06);
+          --brand:       #63CEF8;
+          --brand-a:     rgba(99,206,248,.14);
+          --brand-b:     rgba(99,206,248,.30);
+          --brand-c:     rgba(145,60,175,.08);
           --txt:       #E8EBF6;
           --m1:        #8591AB;
           --m2:        #545E78;
@@ -249,11 +249,11 @@ def inject_css():
           color: var(--txt) !important;
         }
 
-        /* Subtle red ambient on the page bg */
+        /* Subtle logo-color ambient on the page bg */
         .stApp {
           background:
-            radial-gradient(ellipse 700px 500px at -5% -10%, rgba(207,18,57,.16) 0%, transparent 55%),
-            radial-gradient(ellipse 500px 400px at 105% 5%,  rgba(140,18,57,.08) 0%, transparent 50%),
+            radial-gradient(ellipse 700px 500px at -5% -10%, rgba(99,206,248,.16) 0%, transparent 55%),
+            radial-gradient(ellipse 500px 400px at 105% 5%,  rgba(145,60,175,.12) 0%, transparent 50%),
             var(--bg) !important;
         }
 
@@ -273,12 +273,12 @@ def inject_css():
           letter-spacing: -.03em;
         }
         p, label, span, li { color: var(--txt); }
-        a { color: var(--red); text-decoration: none; }
+        a { color: var(--brand); text-decoration: none; }
 
         /* ─────────── SIDEBAR ─────────── */
         section[data-testid="stSidebar"] {
           background:
-            radial-gradient(ellipse 280px 220px at 50% -8%, rgba(207,18,57,.20) 0%, transparent 55%),
+            radial-gradient(ellipse 280px 220px at 50% -8%, rgba(99,206,248,.20) 0%, transparent 55%),
             linear-gradient(180deg, #090B14 0%, #06070D 100%) !important;
           border-right: 1px solid rgba(255,255,255,.06) !important;
         }
@@ -310,13 +310,13 @@ def inject_css():
           color: var(--txt) !important;
         }
         [data-testid="stSidebar"] .stButton > button[kind="primary"] {
-          background: linear-gradient(135deg, var(--red), #9C0B20) !important;
+          background: linear-gradient(135deg, var(--brand), #8C3AAF) !important;
           border-color: rgba(255,255,255,.12) !important;
           color: #fff !important;
           font-weight: 600 !important;
         }
         [data-testid="stSidebar"] .stButton > button[kind="primary"]:hover {
-          background: linear-gradient(135deg, #E0162E, #7A0A1C) !important;
+          background: linear-gradient(135deg, #8BDFFF, #6E66D8) !important;
         }
 
         /* ── Sidebar brand block ── */
@@ -325,15 +325,15 @@ def inject_css():
           align-items: center;
           gap: .7rem;
           padding: .8rem .9rem;
-          background: var(--red-a);
-          border: 1px solid var(--red-b);
+          background: var(--brand-a);
+          border: 1px solid var(--brand-b);
           border-radius: var(--rxl);
           margin-bottom: 1rem;
         }
         .sb-brand-mark {
           width: 34px; height: 34px;
           border-radius: 9px;
-          background: linear-gradient(135deg, var(--red), #7A0A1C);
+          background: linear-gradient(135deg, var(--brand), #6E66D8);
           display: flex; align-items: center; justify-content: center;
           font-size: 1rem; flex-shrink: 0;
           color: #fff !important;
@@ -360,8 +360,8 @@ def inject_css():
         .sb-active {
           display: flex; align-items: center; gap: .6rem;
           padding: .6rem .85rem;
-          background: var(--red-a);
-          border: 1px solid var(--red-b);
+          background: var(--brand-a);
+          border: 1px solid var(--brand-b);
           border-radius: var(--rl);
           margin-bottom: .7rem;
         }
@@ -373,8 +373,8 @@ def inject_css():
         }
         .sb-dot {
           width: 6px; height: 6px; border-radius: 50%;
-          background: var(--red);
-          box-shadow: 0 0 5px var(--red);
+          background: var(--brand);
+          box-shadow: 0 0 5px var(--brand);
           flex-shrink: 0; margin-left: auto;
         }
 
@@ -385,7 +385,7 @@ def inject_css():
           border-radius: var(--rxl);
           padding: 1.35rem 1.6rem;
           background:
-            radial-gradient(ellipse 55% 130% at 0% 50%, rgba(207,18,57,.18) 0%, transparent 55%),
+            radial-gradient(ellipse 55% 130% at 0% 50%, rgba(99,206,248,.18) 0%, transparent 55%),
             linear-gradient(135deg, var(--s1), var(--s2));
           margin-bottom: 1.25rem;
         }
@@ -404,10 +404,10 @@ def inject_css():
         .hero-eyebrow {
           display: inline-flex; align-items: center; gap: .4rem;
           padding: .26rem .6rem;
-          background: var(--red-a);
-          border: 1px solid var(--red-b);
+          background: var(--brand-a);
+          border: 1px solid var(--brand-b);
           border-radius: 999px;
-          color: #FF5570 !important;
+          color: #8BDFFF !important;
           font-size: .66rem; font-weight: 700;
           letter-spacing: .11em; text-transform: uppercase;
           margin-bottom: .65rem;
@@ -505,13 +505,13 @@ def inject_css():
           transition: border-color .16s, background .16s;
         }
         .prompt-card:hover {
-          border-color: var(--red-b);
+          border-color: var(--brand-b);
           background: var(--s2);
         }
         .prompt-num {
           font-size: .63rem; font-weight: 700;
           letter-spacing: .12em; text-transform: uppercase;
-          color: var(--red) !important; margin-bottom: .4rem;
+          color: var(--brand) !important; margin-bottom: .4rem;
         }
         .prompt-card p {
           margin: 0; color: var(--m1) !important;
@@ -522,7 +522,7 @@ def inject_css():
         .badge {
           display: inline-flex; align-items: center;
           padding: .22rem .52rem; border-radius: 999px;
-          background: var(--red-a); border: 1px solid var(--red-b);
+          background: var(--brand-a); border: 1px solid var(--brand-b);
           color: #FF6B80 !important;
           font-size: .68rem; font-weight: 600;
           margin: .1rem .15rem .1rem 0;
@@ -547,19 +547,19 @@ def inject_css():
         }
         .stButton > button:hover,
         .stDownloadButton > button:hover {
-          border-color: var(--red-b) !important;
+          border-color: var(--brand-b) !important;
           background: var(--s1) !important;
           transform: translateY(-1px) !important;
         }
         .stButton > button[kind="primary"],
         .stDownloadButton > button[kind="primary"],
         div[data-testid="stFormSubmitButton"] > button {
-          background: linear-gradient(135deg, var(--red), #9C0B20) !important;
+          background: linear-gradient(135deg, var(--brand), #8C3AAF) !important;
           border-color: rgba(255,255,255,.12) !important;
           color: #fff !important; font-weight: 600 !important;
         }
         .stButton > button[kind="primary"]:hover {
-          background: linear-gradient(135deg, #E0162E, #7A0A1C) !important;
+          background: linear-gradient(135deg, #8BDFFF, #6E66D8) !important;
         }
 
         /* ─────────── INPUTS ─────────── */
@@ -673,7 +673,7 @@ def inject_css():
         }
 
         /* ─────────── SPINNER ─────────── */
-        .stSpinner > div { border-top-color: var(--red) !important; }
+        .stSpinner > div { border-top-color: var(--brand) !important; }
 
         /* ─────────── HIDE CHROME ─────────── */
         footer, #MainMenu, [data-testid="stToolbar"] { visibility: hidden; }
@@ -686,7 +686,7 @@ def inject_css():
 
         /* ─────────── SELECT SLIDER ─────────── */
         .stSelectSlider [data-baseweb="slider"] [role="slider"] {
-          background: var(--red) !important;
+          background: var(--brand) !important;
         }
 
         /* ─────────── DIVIDER ─────────── */
@@ -782,7 +782,7 @@ def plotly_layout(fig, height=400, legend=True):
         ) if legend else None,
         xaxis=dict(gridcolor="rgba(255,255,255,.05)", linecolor="rgba(255,255,255,.06)"),
         yaxis=dict(gridcolor="rgba(255,255,255,.05)", linecolor="rgba(255,255,255,.06)"),
-        colorway=["#CF1239", "#FF5570", "#17B978", "#E8960F", "#7B94FF", "#FF9F52"],
+        colorway=["#63CEF8", "#8BDFFF", "#7C72D8", "#A935A7", "#17B978", "#E8960F"],
     )
     return fig
 
@@ -793,7 +793,7 @@ def build_chart(df, chart_type, title, x="label", y="value", color=None, height=
         return
     common = dict(
         template="plotly_dark", height=height, title=title,
-        color_discrete_sequence=["#CF1239", "#FF5570", "#17B978", "#E8960F", "#7B94FF", "#FF9F52"],
+        color_discrete_sequence=["#63CEF8", "#8BDFFF", "#7C72D8", "#A935A7", "#17B978", "#E8960F"],
     )
     if chart_type == "pie":
         fig = px.pie(df, names=x, values=y, **common)
@@ -1133,7 +1133,7 @@ def show_dynamic_analytics():
         fig = px.line(
             usage, x="summary_month", y="value", color="metric", markers=True,
             title="Average usage trend", template="plotly_dark",
-            color_discrete_sequence=["#CF1239", "#17B978", "#E8960F"],
+            color_discrete_sequence=["#63CEF8", "#7C72D8", "#A935A7"],
         )
         st.plotly_chart(plotly_layout(fig), use_container_width=True)
 
@@ -1407,7 +1407,7 @@ def show_customer_insights():
                 monthly, x="summary_month",
                 y=["total_revenue_jod", "data_used_gb", "churn_score"],
                 markers=True, title="Customer monthly trend", template="plotly_dark",
-                color_discrete_sequence=["#CF1239", "#17B978", "#E8960F"],
+                color_discrete_sequence=["#63CEF8", "#7C72D8", "#A935A7"],
             )
             st.plotly_chart(plotly_layout(fig), use_container_width=True)
             st.dataframe(monthly, use_container_width=True, hide_index=True)
