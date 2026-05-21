@@ -7,3 +7,4 @@ langchain-community>=0.3
 langgraph>=0.2
 openai>=1.58
 sqlalchemy>=2.0
+streamlit-mic-recorder>=0.0.8
