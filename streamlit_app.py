@@ -1030,7 +1030,7 @@ def show_chat():
             if message.get("source"):
                 st.caption(f"Answered by: {message['source']}")
             st.markdown(message.get("content", ""))
-            if message.get("source") == "RAG Agent" and message.get("matched_question"):
+            if "RAG Agent" in message.get("source", "") and message.get("matched_question"):
                 score = message.get("match_score", "")
                 score_text = f" Similarity: {score}" if score != "" else ""
                 st.caption(f"Memory match: {message['matched_question']}.{score_text}")
