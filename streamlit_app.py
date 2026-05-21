@@ -89,7 +89,6 @@ NAV_ITEMS = [
     ("SQL Query Builder",  "SQL Workspace",     "🧮", "Run safe SELECT queries"),
     ("Suggested Questions","Prompt Library",    "✨", "Ready-made use cases"),
     ("Customer Insights",  "Customer 360",      "👤", "Single customer view"),
-    ("Data Catalog",       "Data Catalog",      "🗄", "Schema explorer"),
 ]
 
 
