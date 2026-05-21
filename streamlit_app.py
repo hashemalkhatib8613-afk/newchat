@@ -1028,7 +1028,7 @@ def ask_and_store(prompt):
     chat_history = build_chat_history_context(chat)
     chat["messages"].append({"role": "user", "content": prompt, "sql": ""})
     try:
-        with st.spinner("Analyzing the database…"):
+        with st.spinner(""):
             payload = call_chat_backend(prompt, chat_history)
         answer = payload.get("answer", "No answer was returned.")
         sql = payload.get("sql", "")
